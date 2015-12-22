@@ -1,0 +1,14 @@
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+.idea/
+Thumbs.db
+HomeRemote.iml
+gradlew.bat
+gradlew
+gradle/
+app.iml

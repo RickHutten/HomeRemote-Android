@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primaryDark">#C45900</color>
+    <color name="accent">#EF6C00</color>
+    <color name="primary">#EF6C00</color>
+    <color name="indogo">#4B0082</color>
+    <color name="white">#fff</color>
+    <color name="light_grey">#EEEEEE</color>
+    <color name="black">#000</color>
+    <color name="ripple">#999999</color>
+
+</resources>
