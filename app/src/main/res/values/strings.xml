@@ -4,11 +4,14 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    
-    <string-array name="tabTitles" >
+
+    <string-array name="tabTitles">
         <item>Artists</item>
         <item>Albums</item>
+        <item>Playlists</item>
     </string-array>
+    <string name="title_activity_artist_overview">ArtistOverviewActivity</string>
+    <string name="title_activity_album_overview">AlbumOverviewActivity</string>
 </resources>

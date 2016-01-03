@@ -3,11 +3,9 @@ package nl.rickhutten.homeremote;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -26,7 +24,9 @@ public class AlbumFragment extends Fragment {
         RequestTask getArtists = new RequestTask(new OnTaskCompleted() {
             @Override
             public void onTaskCompleted(String result) {
-                setAlbums(result);
+                if (!result.equals("")) {
+                    setAlbums(result);
+                }
             }
         });
         getArtists.execute("http://rickert.noip.me/albums");
@@ -47,20 +47,24 @@ public class AlbumFragment extends Fragment {
             RelativeLayout.LayoutParams lp = null;
             int width = getResources().getDimensionPixelSize(R.dimen.album_width);
             int height = getResources().getDimensionPixelSize(R.dimen.album_height);
-            if (i % 2 == 0) {
+            if (i % 3 == 0) {
                 // Make layoutparams
-                System.out.println("Layout 1 " + album);
                 lp = new RelativeLayout.LayoutParams(
                         width, height);
-                lp.setMargins(0, (int)Math.floor(i/2)*height, 0, 0);
+                lp.setMargins(0, (int)Math.floor(i/3)*height, 0, 0);
+            } else if (i % 3 == 1) {
+                // Make layoutparams
+                lp = new RelativeLayout.LayoutParams(
+                        width, height);
+                lp.setMargins(width, (int)Math.floor(i/3)*height, 0, 0);
             } else {
                 // Make layoutparams
-                System.out.println("Layout 2 " + album);
                 lp = new RelativeLayout.LayoutParams(
                         width, height);
-                lp.setMargins(width, (int)Math.floor(i/2)*height, 0, 0);
+                lp.setMargins(2*width, (int)Math.floor(i/3)*height, 0, 0);
             }
             albumCardView.setLayoutParams(lp);
+            albumCardView.setWidth(120);
             scrollLayout.addView(albumCardView, 0);
 
             i += 1;

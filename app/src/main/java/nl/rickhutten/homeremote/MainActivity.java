@@ -1,6 +1,6 @@
 package nl.rickhutten.homeremote;
 
-import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -18,16 +18,14 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mPager;
     private SlidingTabLayout mTabs;
     private int ResId;
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        WifiReceiver wifiReceiver = new WifiReceiver();
-        wifiReceiver.setMainActivityHandler(this);
-        IntentFilter intentFilter = new IntentFilter("android.net.wifi.STATE_CHANGE");
-        registerReceiver(wifiReceiver, intentFilter);
+        sp = getSharedPreferences("prefs", MODE_PRIVATE);
 
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
@@ -69,7 +67,29 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
 
+    public void setPlayingSong(String text) {
+        int savedResId = sp.getInt("playpause", 0);
+        if (ResId != savedResId && savedResId != 0) {
+            setPlayPause(savedResId);
+        }
+        ((TextView)findViewById(R.id.playingText)).setText(text);
+    }
+
+    public void setPlayPause(int id) {
+        ResId = id;
+        sp.edit().putInt("playpause", ResId).apply();
+        ((ImageView)findViewById(R.id.playPause)).setImageResource(id);
+    }
+
+    public boolean isPlaying() {
+        return sp.getInt("playpause", 0) != R.drawable.ic_play_circle_outline_white_48dp;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         RequestTask getPlaying = new RequestTask(new OnTaskCompleted() {
             @Override
             public void onTaskCompleted(String result) {
@@ -77,19 +97,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         getPlaying.execute("http://rickert.noip.me/playing");
-    }
-
-    public void setPlayingSong(String text) {
-        ((TextView)findViewById(R.id.playingText)).setText(text);
-    }
-
-    public void setPlayPause(int id) {
-        ResId = id;
-        ((ImageView)findViewById(R.id.playPause)).setImageResource(id);
-    }
-
-    public boolean isPlaying() {
-        return ResId != R.drawable.ic_play_circle_outline_white_48dp;
     }
 
     class MyPagerAdapter extends FragmentPagerAdapter {
@@ -102,11 +109,15 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            if (position == 0) {
-                return new ArtistFragment();
-            } else {
-                return new AlbumFragment();
+            switch (position) {
+                case 0:
+                    return new ArtistFragment();
+                case 1:
+                    return new AlbumFragment();
+                case 2:
+                    return new PlaylistFragment();
             }
+            return null;
         }
 
         @Override
@@ -116,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
     }
 }

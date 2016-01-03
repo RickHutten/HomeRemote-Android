@@ -28,6 +28,7 @@
                 android:src="@drawable/ic_shuffle_black_48dp"/>
 
             <RelativeLayout
+                android:id="@+id/artistContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/ripple"

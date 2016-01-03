@@ -6,27 +6,40 @@ import android.content.Intent;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.widget.Toast;
 
 
 public class WifiReceiver extends BroadcastReceiver {
-
-    MainActivity mainActivity = null;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
         NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-        if(info != null && info.isConnected()) {
+        if(info != null) {
             // Get Wifi SSID
             WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             String ssid = wifiInfo.getSSID();
+            Toast.makeText(context, ssid, Toast.LENGTH_SHORT).show();
 
+            if (ssid.contains("Wie dit leest is gek")) {
+                final RequestTask play = new RequestTask(new OnTaskCompleted() {
+                    @Override
+                    public void onTaskCompleted(String result) {
+                    }
+                });
+
+                RequestTask register = new RequestTask(new OnTaskCompleted() {
+                    @Override
+                    public void onTaskCompleted(String result) {
+                        play.execute("http://rickert.noip.me/play");
+                    }
+                });
+                register.execute("http://rickert.noip.me/register_ip");
+            } else {
+                // I am not home
+                System.out.println(ssid);
+            }
         }
-    }
-
-    public void setMainActivityHandler(MainActivity main){
-        // Set activity
-        mainActivity = main;
     }
 }

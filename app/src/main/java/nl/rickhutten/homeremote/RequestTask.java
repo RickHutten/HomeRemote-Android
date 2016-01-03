@@ -1,6 +1,8 @@
 package nl.rickhutten.homeremote;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -20,17 +22,15 @@ class RequestTask extends AsyncTask<String, String, String> {
         String strFileContents = "";
         try {
             URL url = new URL(uri[0]);
+            System.out.println(url);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            System.out.println("Response code: " + urlConnection.getResponseCode());
             BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
             byte[] contents = new byte[1024];
-
             int bytesRead;
 
             while( (bytesRead = in.read(contents)) != -1){
                 strFileContents = new String(contents, 0, bytesRead);
             }
-            System.out.println(strFileContents);
         } catch (IOException e) {
             e.printStackTrace();
         }

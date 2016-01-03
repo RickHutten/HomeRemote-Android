@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="transparent">#00000000</color>
     <color name="primaryDark">#C45900</color>
     <color name="accent">#EF6C00</color>
     <color name="primary">#EF6C00</color>
-    <color name="indogo">#4B0082</color>
+    <color name="indigo">#4B0082</color>
     <color name="white">#fff</color>
     <color name="light_grey">#EEEEEE</color>
+    <color name="med_grey">#DDDDDD</color>
+    <color name="dark_grey">#777777</color>
     <color name="black">#000</color>
+    <color name="black_trans">#4000</color>
     <color name="ripple">#999999</color>
 
 </resources>

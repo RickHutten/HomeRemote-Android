@@ -5,6 +5,8 @@
     <dimen name="play_bar_height">72dp</dimen>
     <dimen name="artist_card_height">64dp</dimen>
     <dimen name="artist_shufflebutton_padding">18dp</dimen>
-    <dimen name="album_width">180dp</dimen>
-    <dimen name="album_height">260dp</dimen>
+    <dimen name="album_width">120dp</dimen>
+    <dimen name="album_height">173dp</dimen>
+    <dimen name="album_image_size">104dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>

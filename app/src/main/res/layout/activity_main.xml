@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/play_bar_height"
         android:layout_alignParentBottom="true"
-        android:background="@color/black" >
+        android:background="@color/black_trans" >
 
         <ImageView
             android:id="@+id/playPause"

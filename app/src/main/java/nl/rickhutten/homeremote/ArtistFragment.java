@@ -25,7 +25,9 @@ public class ArtistFragment extends Fragment {
         RequestTask getArtists = new RequestTask(new OnTaskCompleted() {
             @Override
             public void onTaskCompleted(String result) {
-                setArtists(result);
+                if (!result.equals("")) {
+                    setArtists(result);
+                }
             }
         });
         getArtists.execute("http://rickert.noip.me/artists");
