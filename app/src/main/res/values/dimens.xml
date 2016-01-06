@@ -9,4 +9,6 @@
     <dimen name="album_height">173dp</dimen>
     <dimen name="album_image_size">104dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="artist_title">38sp</dimen>
 </resources>

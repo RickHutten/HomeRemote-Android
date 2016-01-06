@@ -41,8 +41,8 @@ public class AlbumFragment extends Fragment {
         Collections.sort(arrayList);
         int i = 0;
         for (String album : arrayList) {
-
-            AlbumCardView albumCardView = new AlbumCardView(getContext(), mainActivity);
+            AlbumCardView albumCardView = new AlbumCardView(getContext());
+            albumCardView.set(mainActivity, mainActivity.musicControlView);
             albumCardView.setAlbum(album);
             RelativeLayout.LayoutParams lp = null;
             int width = getResources().getDimensionPixelSize(R.dimen.album_width);
@@ -51,17 +51,17 @@ public class AlbumFragment extends Fragment {
                 // Make layoutparams
                 lp = new RelativeLayout.LayoutParams(
                         width, height);
-                lp.setMargins(0, (int)Math.floor(i/3)*height, 0, 0);
+                lp.setMargins(0, (int) Math.floor(i / 3) * height, 0, 0);
             } else if (i % 3 == 1) {
                 // Make layoutparams
                 lp = new RelativeLayout.LayoutParams(
                         width, height);
-                lp.setMargins(width, (int)Math.floor(i/3)*height, 0, 0);
+                lp.setMargins(width, (int) Math.floor(i / 3) * height, 0, 0);
             } else {
                 // Make layoutparams
                 lp = new RelativeLayout.LayoutParams(
                         width, height);
-                lp.setMargins(2*width, (int)Math.floor(i/3)*height, 0, 0);
+                lp.setMargins(2 * width, (int) Math.floor(i / 3) * height, 0, 0);
             }
             albumCardView.setLayoutParams(lp);
             albumCardView.setWidth(120);

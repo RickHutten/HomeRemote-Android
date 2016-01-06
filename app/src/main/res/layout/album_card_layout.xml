@@ -22,30 +22,40 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
 
-        <TextView
-            android:id="@+id/albumText"
+        <RelativeLayout
+            android:layout_below="@id/albumImage"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:text="Album Title"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_below="@+id/albumImage"
-            android:layout_alignEnd="@+id/artistText" />
+            android:layout_height="match_parent"
+            android:background="@drawable/ripple">
 
-        <TextView
-            android:id="@+id/artistText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="8sp"
-            android:text="Artist"
-            android:textColor="@color/black"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_below="@+id/albumText"
-            android:layout_alignParentStart="true" />
+            <TextView
+                android:id="@+id/albumText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:text="Album Title"
+                android:textStyle="bold"
+                android:textColor="@color/textColor"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:layout_alignParentTop="true"
+                android:layout_alignEnd="@+id/artistText" />
+
+            <TextView
+                android:id="@+id/artistText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:text="Artist"
+                android:textColor="@color/textColor"
+                android:singleLine="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_below="@+id/albumText"
+                android:layout_alignParentStart="true" />
+        </RelativeLayout>
 
     </RelativeLayout>
 

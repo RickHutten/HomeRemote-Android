@@ -1,24 +1,22 @@
 package nl.rickhutten.homeremote;
 
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private ViewPager mPager;
     private SlidingTabLayout mTabs;
-    private int ResId;
     private SharedPreferences sp;
+    MusicControlView musicControlView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +24,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         sp = getSharedPreferences("prefs", MODE_PRIVATE);
+
+        // Add view to main activity
+        musicControlView = new MusicControlView(this);
+        ((RelativeLayout) findViewById(R.id.activity_main_container)).addView(musicControlView);
 
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
@@ -42,61 +44,12 @@ public class MainActivity extends AppCompatActivity {
         mTabs.setSelectedIndicatorColors(colors);
         mTabs.setBackgroundResource(R.color.primary);
         mTabs.setViewPager(mPager);
-
-        findViewById(R.id.playPause).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isPlaying()) {
-                    // Resume playing
-                    RequestTask resume = new RequestTask(new OnTaskCompleted() {
-                        @Override
-                        public void onTaskCompleted(String result) {
-                            setPlayPause(R.drawable.ic_pause_circle_outline_white_48dp);
-                        }
-                    });
-                    resume.execute("http://rickert.noip.me/resume");
-                } else {
-                    // Pause playing
-                    RequestTask pause = new RequestTask(new OnTaskCompleted() {
-                        @Override
-                        public void onTaskCompleted(String result) {
-                            setPlayPause(R.drawable.ic_play_circle_outline_white_48dp);
-                        }
-                    });
-                    pause.execute("http://rickert.noip.me/pause");
-                }
-            }
-        });
-    }
-
-    public void setPlayingSong(String text) {
-        int savedResId = sp.getInt("playpause", 0);
-        if (ResId != savedResId && savedResId != 0) {
-            setPlayPause(savedResId);
-        }
-        ((TextView)findViewById(R.id.playingText)).setText(text);
-    }
-
-    public void setPlayPause(int id) {
-        ResId = id;
-        sp.edit().putInt("playpause", ResId).apply();
-        ((ImageView)findViewById(R.id.playPause)).setImageResource(id);
-    }
-
-    public boolean isPlaying() {
-        return sp.getInt("playpause", 0) != R.drawable.ic_play_circle_outline_white_48dp;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        RequestTask getPlaying = new RequestTask(new OnTaskCompleted() {
-            @Override
-            public void onTaskCompleted(String result) {
-                setPlayingSong(result);
-            }
-        });
-        getPlaying.execute("http://rickert.noip.me/playing");
+        musicControlView.update();
     }
 
     class MyPagerAdapter extends FragmentPagerAdapter {

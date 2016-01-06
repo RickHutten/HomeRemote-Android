@@ -1,15 +1,14 @@
 package nl.rickhutten.homeremote;
 
-import android.animation.ObjectAnimator;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
-import android.view.View;
+import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -24,7 +23,7 @@ public class AlbumOverviewActivity extends AppCompatActivity {
     private String artistName;
     private String albumName;
     public SharedPreferences sp;
-    private int ResId;
+    MusicControlView musicControlView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +31,11 @@ public class AlbumOverviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_album_overview);
 
         sp = getSharedPreferences("prefs", MODE_PRIVATE);
+
+        // Add view to main activity
+        musicControlView = new MusicControlView(this);
+        ((RelativeLayout) findViewById(R.id.activity_album_overview_container)).addView(musicControlView);
+
         this.artistName = getIntent().getStringExtra("artist");
         this.albumName = getIntent().getStringExtra("album");
         ((TextView)findViewById(R.id.artistText)).setText(artistName);
@@ -48,42 +52,9 @@ public class AlbumOverviewActivity extends AppCompatActivity {
         });
 
         Picasso.with(this).load("http://rickert.noip.me/image/" + artistName.replace(" ", "_")
-                + "/" + albumName.replace(" ", "_")).into(topView);
+                + "/" + albumName.replace(" ", "_")).config(Bitmap.Config.RGB_565).into(topView);
 
         setAlbum();
-
-        findViewById(R.id.playPause).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isPlaying()) {
-                    // Resume playing
-                    RequestTask resume = new RequestTask(new OnTaskCompleted() {
-                        @Override
-                        public void onTaskCompleted(String result) {
-                            setPlayPause(R.drawable.ic_pause_circle_outline_white_48dp);
-                        }
-                    });
-                    resume.execute("http://rickert.noip.me/resume");
-                } else {
-                    // Pause playing
-                    RequestTask pause = new RequestTask(new OnTaskCompleted() {
-                        @Override
-                        public void onTaskCompleted(String result) {
-                            setPlayPause(R.drawable.ic_play_circle_outline_white_48dp);
-                        }
-                    });
-                    pause.execute("http://rickert.noip.me/pause");
-                }
-            }
-        });
-
-        RequestTask getPlaying = new RequestTask(new OnTaskCompleted() {
-            @Override
-            public void onTaskCompleted(String result) {
-                setPlayingSong(result);
-            }
-        });
-        getPlaying.execute("http://rickert.noip.me/playing");
     }
 
     public void setAlbum() {
@@ -104,36 +75,25 @@ public class AlbumOverviewActivity extends AppCompatActivity {
         LinearLayout songContainer = (LinearLayout) findViewById(R.id.songs);
 
         for (String song : songs) {
-            System.out.println(song);
+            Log.v("AlbumOverViewActivity", song);
             String[] albumArtist = song.split(":");
             String title = albumArtist[0];
             int length = Integer.parseInt(albumArtist[1]);
             SongView songView = new SongView(this, artistName, albumName);
-            songView.set(title, length);
+            songView.set(musicControlView, title, length);
             songContainer.addView(songView);
         }
     }
 
-    public void setPlayingSong(String text) {
-        int savedResId = sp.getInt("playpause", 0);
-        if (ResId != savedResId && savedResId != 0) {
-            setPlayPause(savedResId);
-        }
-        ((TextView)findViewById(R.id.playingText)).setText(text);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        musicControlView.update();
     }
 
-    public void setPlayPause(int id) {
-        ResId = id;
-        sp.edit().putInt("playpause", ResId).apply();
-        ((ImageView)findViewById(R.id.playPause)).setImageResource(id);
-    }
-
-    public boolean isPlaying() {
-        return sp.getInt("playpause", 0) != R.drawable.ic_play_circle_outline_white_48dp;
-    }
-
-    public int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        supportFinishAfterTransition();
     }
 }

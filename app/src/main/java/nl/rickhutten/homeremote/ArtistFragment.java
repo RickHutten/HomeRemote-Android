@@ -3,7 +3,6 @@ package nl.rickhutten.homeremote;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
 public class ArtistFragment extends Fragment {
 
     ViewGroup layout;
@@ -39,13 +37,22 @@ public class ArtistFragment extends Fragment {
         LinearLayout scrollLayout = (LinearLayout) layout.findViewById(R.id.scrollLayout);
         ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(artists.split(";")));
 
-
         Collections.sort(arrayList);
-        Collections.reverse(arrayList);
+
+        ArtistCardView artistCardView = new ArtistCardView(getContext());
+        artistCardView.setFirstLetter(arrayList.get(0).charAt(0));
+
         for (String artist : arrayList) {
-            ArtistCardView artistCardView = new ArtistCardView(getContext(), mainActivity);
-            artistCardView.setArtist(artist);
-            scrollLayout.addView(artistCardView, 0);
+            if (artistCardView.getFirstLetter().compareTo(artist.charAt(0)) != 0) {
+                // New card because the card a artist with a new first letter has come
+                artistCardView.set(mainActivity, mainActivity.musicControlView);
+                scrollLayout.addView(artistCardView, scrollLayout.getChildCount() - 1);
+                artistCardView = new ArtistCardView(getContext());
+                artistCardView.setFirstLetter(artist.charAt(0));
+            }
+            artistCardView.addArtist(artist);
         }
+        scrollLayout.addView(artistCardView, scrollLayout.getChildCount() - 1);
+
     }
 }

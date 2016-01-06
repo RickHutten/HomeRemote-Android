@@ -1,63 +1,83 @@
 package nl.rickhutten.homeremote;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.CardView;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class ArtistCardView extends CardView{
+public class ArtistCardView extends RelativeLayout {
 
     private View rootView;
     private Context context;
-    private MainActivity mainActivity;
-    private String artist;
+    private LinearLayout card;
+    private TextView firstLetter;
+    private MusicControlView musicControlView;
+    private Activity activity;
 
-    public ArtistCardView(Context context, final MainActivity mainActivity) {
+    public ArtistCardView(Context context) {
         super(context);
         // Inflate layout from XML file
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         rootView = inflater.inflate(R.layout.artist_card_layout, this, false);
         addView(rootView);
 
+        firstLetter = (TextView) rootView.findViewById(R.id.firstLetter);
+        card = (LinearLayout) rootView.findViewById(R.id.card);
+
         this.context = context;
-        this.mainActivity = mainActivity;
     }
 
-    public void setArtist(final String artist) {
-        this.artist = artist;
-        final String artistFormat = artist.replace(" ", "_");
-        ((TextView) rootView.findViewById(R.id.artistText)).setText(artist);
-        rootView.findViewById(R.id.shuffleButton).setOnClickListener(new OnClickListener() {
+    public void set(final Activity activity, MusicControlView musicControlView) {
+        this.activity = activity;
+        this.musicControlView = musicControlView;
+    }
+
+    public Character getFirstLetter() {
+        return firstLetter.getText().charAt(0);
+    }
+
+    public void setFirstLetter(Character letter) {
+        firstLetter.setText(letter.toString());
+    }
+
+    public void addArtist(final String artist) {
+        final TextView artistTextView = new TextView(context);
+        artistTextView.setText(artist);
+        final int id = generateViewId();
+        artistTextView.setId(id);
+        artistTextView.setPadding(dpToPx(6), dpToPx(6), dpToPx(6), dpToPx(6));
+        artistTextView.setWidth(card.getWidth());
+        artistTextView.setBackgroundResource(R.drawable.ripple);
+        artistTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        artistTextView.setSingleLine(true);
+
+        artistTextView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                RequestTask playArtist = new RequestTask(new OnTaskCompleted() {
-                    @Override
-                    public void onTaskCompleted(String result) {
-                        mainActivity.setPlayPause(R.drawable.ic_pause_circle_outline_white_48dp);
-                    }
-                });
-                playArtist.execute("http://rickert.noip.me/play/" + artistFormat);
-
-                RequestTask getPlaying = new RequestTask(new OnTaskCompleted() {
-                    @Override
-                    public void onTaskCompleted(String result) {
-                        mainActivity.setPlayingSong(result);
-                    }
-                });
-                getPlaying.execute("http://rickert.noip.me/playing");
-            }
-        });
-
-        rootView.findViewById(R.id.artistContainer).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("Clicked on " + artist);
-                Intent intent = new Intent(mainActivity, ArtistOverviewActivity.class);
+                Log.i("ArtistCardView", "Clicked on " + artist);
+                Intent intent = new Intent(context, ArtistOverviewActivity.class);
                 intent.putExtra("artist", artist);
-                mainActivity.startActivity(intent);
+
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(activity, musicControlView, "musicControlView");
+
+                context.startActivity(intent, options.toBundle());
             }
         });
+
+        card.addView(artistTextView);
+    }
+
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 }

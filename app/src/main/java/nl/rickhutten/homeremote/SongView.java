@@ -7,14 +7,13 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 public class SongView extends RelativeLayout {
 
     private View rootView;
     private Context context;
     private String artist;
     private String album;
+    private String title;
 
     public SongView(Context context, String artist, String album) {
         super(context);
@@ -26,7 +25,8 @@ public class SongView extends RelativeLayout {
         this.album = album;
     }
 
-    public void set(final String title, int length) {
+    public void set(final MusicControlView musicControlView, final String title, int length) {
+        this.title = title;
         ((TextView)findViewById(R.id.songName)).setText(title);
         int minutes = length / 60;
         int seconds = length % 60;
@@ -43,14 +43,14 @@ public class SongView extends RelativeLayout {
                     @Override
                     public void onTaskCompleted(String result) {
                         SharedPreferences sp = ((AlbumOverviewActivity)context).sp;
-                        sp.edit().putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp).commit();
-                        RequestTask getPlaying = new RequestTask(new OnTaskCompleted() {
-                            @Override
-                            public void onTaskCompleted(String result) {
-                                ((AlbumOverviewActivity)context).setPlayingSong(result);
-                            }
-                        });
-                        getPlaying.execute("http://rickert.noip.me/playing");
+                        SharedPreferences.Editor e = sp.edit();
+                        e.putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp);
+                        e.putString("artist", artist);
+                        e.putString("album", album);
+                        e.putString("song", title);
+                        e.commit();
+
+                        musicControlView.update();
                     }
                 });
                 r.execute("http://rickert.noip.me/play/" + artist.replace(" ", "_") + "/" +

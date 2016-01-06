@@ -18,6 +18,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/play_bar_height" />
+
         </LinearLayout>
 
     </ScrollView>

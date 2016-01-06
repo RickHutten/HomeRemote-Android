@@ -3,6 +3,9 @@ package nl.rickhutten.homeremote;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +15,14 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-public class AlbumCardView extends RelativeLayout{
+public class AlbumCardView extends RelativeLayout {
 
     private View rootView;
     private Context context;
     private Activity activity;
+    private MusicControlView musicControlView;
 
-    public AlbumCardView(Context context, final Activity activity) {
+    public AlbumCardView(Context context) {
         super(context);
         // Inflate layout from XML file
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -26,80 +30,42 @@ public class AlbumCardView extends RelativeLayout{
         addView(rootView);
 
         this.context = context;
+    }
+
+    public void set(final Activity activity, MusicControlView musicControlView) {
         this.activity = activity;
-        activity.findViewById(R.id.playPause).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isPlaying()) {
-                    // Resume playing
-                    RequestTask resume = new RequestTask(new OnTaskCompleted() {
-                        @Override
-                        public void onTaskCompleted(String result) {
-                            setPlayPause(R.drawable.ic_pause_circle_outline_white_48dp);
-                        }
-                    });
-                    resume.execute("http://rickert.noip.me/resume");
-                } else {
-                    // Pause playing
-                    RequestTask pause = new RequestTask(new OnTaskCompleted() {
-                        @Override
-                        public void onTaskCompleted(String result) {
-                            setPlayPause(R.drawable.ic_play_circle_outline_white_48dp);
-                        }
-                    });
-                    pause.execute("http://rickert.noip.me/pause");
-                }
-            }
-        });
-    }
-
-    private boolean isPlaying() {
-        try {
-            return ((MainActivity) activity).isPlaying();
-        } catch (ClassCastException e) {
-            return ((ArtistOverviewActivity) activity).isPlaying();
-        }
-    }
-
-    private void setPlayPause(int resId) {
-        
-        try {
-            ((MainActivity) activity).setPlayPause(resId);
-        } catch (ClassCastException e) {
-            ((ArtistOverviewActivity) activity).setPlayPause(resId);
-        }
-    }
-
-    private void setPlayingSong(String s) {
-        try {
-            ((MainActivity) activity).setPlayingSong(s);
-        } catch (ClassCastException e) {
-            ((ArtistOverviewActivity) activity).setPlayingSong(s);
-        }
+        this.musicControlView = musicControlView;
     }
 
     public void setAlbum(String albArt) {
         String[] albumArtist = albArt.split(":");
         final String album = albumArtist[0];
         final String artist = albumArtist[1];
+
         ((TextView) rootView.findViewById(R.id.albumText)).setText(album);
         ((TextView) rootView.findViewById(R.id.artistText)).setText(artist);
+
         final String artistFormat = artist.replace(" ", "_");
         final String albumFormat = album.replace(" ", "_");
-        ImageView albumImage = (ImageView) findViewById(R.id.albumImage);
-        System.out.println("http://rickert.noip.me/image/" + artistFormat + "/" + albumFormat);
+        final ImageView albumImage = (ImageView) findViewById(R.id.albumImage);
 
         // Download image and load into imageview
-        Picasso.with(context).load("http://rickert.noip.me/image/" + artistFormat + "/" + albumFormat).into(albumImage);
+        Picasso.with(context).load("http://rickert.noip.me/image/" + artistFormat + "/" + albumFormat)
+                .config(Bitmap.Config.RGB_565).into(albumImage);
 
         rootView.findViewById(R.id.cardView).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println(getContext());
                 Intent intent = new Intent(activity, AlbumOverviewActivity.class);
                 intent.putExtra("artist", artist);
                 intent.putExtra("album", album);
-                activity.startActivity(intent);
+
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(activity,
+                                Pair.create((View) musicControlView, "musicControlView"),
+                                Pair.create((View) albumImage, "albumImage"));
+
+                activity.startActivity(intent, options.toBundle());
             }
         });
     }
@@ -109,7 +75,7 @@ public class AlbumCardView extends RelativeLayout{
         View imageView = rootView.findViewById(R.id.albumImage);
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) cardView.getLayoutParams();
         lp.width = dpToPx(dp);
-        lp.height = dpToPx(((Double)(dp * 13/9.0)).intValue());
+        lp.height = dpToPx(((Double) (dp * 13 / 9.0)).intValue());
         cardView.setLayoutParams(lp);
 
         RelativeLayout.LayoutParams lp2 = (RelativeLayout.LayoutParams) imageView.getLayoutParams();

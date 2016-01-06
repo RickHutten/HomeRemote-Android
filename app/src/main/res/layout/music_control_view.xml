@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/play_bar_height"
+    android:layout_alignParentBottom="true"
+    android:id="@+id/music_control_view_container"
+    android:background="@color/black_trans">
+
+    <ImageView
+        android:id="@+id/playPause"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="2dp"
+        android:src="@drawable/ic_play_circle_outline_white_48dp"/>
+
+    <ImageView
+        android:id="@+id/next"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_toRightOf="@id/playPause"
+        android:layout_marginTop="7dp"
+        android:layout_marginLeft="12dp"
+        android:src="@drawable/ic_skip_next_white_48dp"/>
+
+    <ImageView
+        android:id="@+id/prev"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_toLeftOf="@id/playPause"
+        android:layout_marginTop="7dp"
+        android:layout_marginRight="12dp"
+        android:src="@drawable/ic_skip_previous_white_48dp"/>
+
+    <TextView
+        android:id="@+id/playingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="2dp"
+        android:textColor="@color/white"
+        android:text="Not playing anything."
+        android:lines="1"/>
+
+</RelativeLayout>

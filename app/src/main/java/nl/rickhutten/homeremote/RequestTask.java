@@ -1,12 +1,11 @@
 package nl.rickhutten.homeremote;
 
-import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
+import android.util.Log;
 
-import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.HttpURLConnection;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 class RequestTask extends AsyncTask<String, String, String> {
@@ -19,22 +18,22 @@ class RequestTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... uri) {
-        String strFileContents = "";
+        String result = "";
         try {
             URL url = new URL(uri[0]);
-            System.out.println(url);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            byte[] contents = new byte[1024];
-            int bytesRead;
+            Log.v("RequestTask", url.toString());
 
-            while( (bytesRead = in.read(contents)) != -1){
-                strFileContents = new String(contents, 0, bytesRead);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result += line;
             }
+            reader.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return strFileContents;
+        return result;
     }
 
     @Override
