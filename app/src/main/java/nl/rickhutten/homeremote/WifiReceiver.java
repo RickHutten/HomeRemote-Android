@@ -23,19 +23,19 @@ public class WifiReceiver extends BroadcastReceiver {
             Toast.makeText(context, ssid, Toast.LENGTH_SHORT).show();
 
             if (ssid.contains("Wie dit leest is gek")) {
-                final RequestTask play = new RequestTask(new OnTaskCompleted() {
+                final GETRequest play = new GETRequest(new OnTaskCompleted() {
                     @Override
                     public void onTaskCompleted(String result) {
                     }
                 });
 
-                RequestTask register = new RequestTask(new OnTaskCompleted() {
+                GETRequest register = new GETRequest(new OnTaskCompleted() {
                     @Override
                     public void onTaskCompleted(String result) {
                         play.execute("http://rickert.noip.me/play");
                     }
                 });
-                register.execute("http://rickert.noip.me/register_ip");
+                register.execute("http://rickert.noip.me/register_ip?key=hoerenneukennooitmeerwerken");
             } else {
                 // I am not home
                 System.out.println(ssid);

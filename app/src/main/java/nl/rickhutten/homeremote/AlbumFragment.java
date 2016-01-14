@@ -21,7 +21,7 @@ public class AlbumFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.layout = (ViewGroup) inflater.inflate(R.layout.album_fragment, container, false);
         mainActivity = (MainActivity) inflater.getContext();
-        RequestTask getArtists = new RequestTask(new OnTaskCompleted() {
+        GETRequest getArtists = new GETRequest(new OnTaskCompleted() {
             @Override
             public void onTaskCompleted(String result) {
                 if (!result.equals("")) {

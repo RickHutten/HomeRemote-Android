@@ -1,14 +1,12 @@
 <resources>
     <string name="app_name">Home Remote</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_volume">Set volume</string>
 
     <string-array name="tabTitles">
         <item>Artists</item>
         <item>Albums</item>
         <item>Playlists</item>
     </string-array>
-    <string name="title_activity_artist_overview">ArtistOverviewActivity</string>
-    <string name="title_activity_album_overview">AlbumOverviewActivity</string>
+
 </resources>

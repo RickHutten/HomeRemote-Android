@@ -45,8 +45,8 @@ public class AlbumCardView extends RelativeLayout {
         ((TextView) rootView.findViewById(R.id.albumText)).setText(album);
         ((TextView) rootView.findViewById(R.id.artistText)).setText(artist);
 
-        final String artistFormat = artist.replace(" ", "_");
-        final String albumFormat = album.replace(" ", "_");
+        String artistFormat = artist.replace(" ", "_");
+        String albumFormat = album.replace(" ", "_");
         final ImageView albumImage = (ImageView) findViewById(R.id.albumImage);
 
         // Download image and load into imageview

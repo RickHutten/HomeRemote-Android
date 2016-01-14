@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="nl.rickhutten.homeremote" >
+    package="nl.rickhutten.homeremote">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -8,12 +8,11 @@
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:hardwareAccelerated="true"
-        android:theme="@style/AppTheme" >
-
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -23,22 +22,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".ArtistOverviewActivity" />
+        <activity android:name=".AlbumOverviewActivity" />
         <activity
-            android:name=".ArtistOverviewActivity"
-            android:label="@string/title_activity_artist_overview" />
-
-        <activity
-            android:name=".AlbumOverviewActivity"
-            android:label="@string/title_activity_album_overview"
-            android:theme="@style/AppTheme" />
+            android:name=".VolumeControlActivity"
+            android:theme="@style/TransparentTheme" />
 
         <receiver android:name=".WifiReceiver">
             <intent-filter>
                 <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>
         </receiver>
-        
+
     </application>
 
 </manifest>

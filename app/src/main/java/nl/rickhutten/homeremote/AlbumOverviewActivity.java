@@ -1,10 +1,13 @@
 package nl.rickhutten.homeremote;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,15 +54,18 @@ public class AlbumOverviewActivity extends AppCompatActivity {
             }
         });
 
-        Picasso.with(this).load("http://rickert.noip.me/image/" + artistName.replace(" ", "_")
-                + "/" + albumName.replace(" ", "_")).config(Bitmap.Config.RGB_565).into(topView);
+        String artistFormat = artistName.replace(" ", "_");
+        String albumFormat = albumName.replace(" ", "_");
+        // Download image and load into imageview
+        Picasso.with(this).load("http://rickert.noip.me/image/" + artistFormat + "/" + albumFormat)
+                .config(Bitmap.Config.RGB_565).into(topView);
 
         setAlbum();
     }
 
     public void setAlbum() {
         // Download the songs
-        RequestTask getSongs = new RequestTask(new OnTaskCompleted() {
+        GETRequest getSongs = new GETRequest(new OnTaskCompleted() {
             @Override
             public void onTaskCompleted(String result) {
                 songs = new ArrayList<>(Arrays.asList(result.split(";")));
@@ -71,16 +77,27 @@ public class AlbumOverviewActivity extends AppCompatActivity {
     }
 
     private void addSongs() {
+        // Create playlist
+        ArrayList<ArrayList<String>> playlist = new ArrayList<>();
+        for (String song : songs) {
+            ArrayList<String> songList = new ArrayList<>();
+            songList.add(artistName);
+            songList.add(albumName);
+            songList.add(song.split(":")[0]);
+
+            playlist.add(songList);
+        }
+
         // Add songs to linearlayout
         LinearLayout songContainer = (LinearLayout) findViewById(R.id.songs);
 
-        for (String song : songs) {
-            Log.v("AlbumOverViewActivity", song);
+        for (int i = 0; i < songs.size(); i++) {
+            String song = songs.get(i);
             String[] albumArtist = song.split(":");
-            String title = albumArtist[0];
             int length = Integer.parseInt(albumArtist[1]);
+
             SongView songView = new SongView(this, artistName, albumName);
-            songView.set(musicControlView, title, length);
+            songView.set(musicControlView, playlist, i, length);
             songContainer.addView(songView);
         }
     }
@@ -96,4 +113,25 @@ public class AlbumOverviewActivity extends AppCompatActivity {
         super.onBackPressed();
         supportFinishAfterTransition();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_volume:
+                Intent intent = new Intent(this, VolumeControlActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

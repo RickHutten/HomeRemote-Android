@@ -35,6 +35,55 @@ public class MusicControlView extends RelativeLayout {
             }
         });
 
+        findViewById(R.id.next).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GETRequest next = new GETRequest(new OnTaskCompleted() {
+                    @Override
+                    public void onTaskCompleted(String result) {
+                        String[] split = result.split(";");
+
+                        // Put values in sharedpreferences
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString("artist", split[0]);
+                        editor.putString("album", split[1]);
+                        editor.putString("song", split[2]);
+                        editor.putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp);
+                        editor.commit();
+
+                        // Update view
+                        update();
+                    }
+                });
+                next.execute("http://rickert.noip.me/next");
+            }
+        });
+
+        findViewById(R.id.prev).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GETRequest next = new GETRequest(new OnTaskCompleted() {
+                    @Override
+                    public void onTaskCompleted(String result) {
+                        String[] split = result.split(";");
+
+                        // Put values in sharedpreferences
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString("artist", split[0]);
+                        editor.putString("album", split[1]);
+                        editor.putString("song", split[2]);
+                        editor.putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp);
+                        editor.commit();
+
+                        // Update view
+                        update();
+                    }
+                });
+                next.execute("http://rickert.noip.me/previous");
+            }
+        });
+
+
         // Don't let the container let touches get 'through'
         findViewById(R.id.music_control_view_container).setOnTouchListener(new OnTouchListener() {
             @Override
@@ -73,7 +122,7 @@ public class MusicControlView extends RelativeLayout {
     }
 
     private void pauseMusic() {
-        RequestTask r = new RequestTask(new OnTaskCompleted() {
+        GETRequest r = new GETRequest(new OnTaskCompleted() {
             @Override
             public void onTaskCompleted(String result) {
                 setPlayPause(R.drawable.ic_play_circle_outline_white_48dp);
@@ -83,7 +132,7 @@ public class MusicControlView extends RelativeLayout {
     }
 
     private void resumeMusic() {
-        RequestTask r = new RequestTask(new OnTaskCompleted() {
+        GETRequest r = new GETRequest(new OnTaskCompleted() {
             @Override
             public void onTaskCompleted(String result) {
                 setPlayPause(R.drawable.ic_pause_circle_outline_white_48dp);
