@@ -10,46 +10,25 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class POSTRequest extends AsyncTask<String, String, String> {
 
-    ArrayList<ArrayList<String>> data;
-    OnTaskCompleted listener;
+    private String data;
+    private OnTaskCompleted listener;
 
-    public POSTRequest(ArrayList<ArrayList<String>> data, OnTaskCompleted listener) {
+    public POSTRequest(String data, OnTaskCompleted listener) {
         this.data = data;
         this.listener = listener;
     }
 
     @Override
     protected String doInBackground(String... uri) {
-        String data_string = "";
         String msg = "";
-        // data is of shape: [ [artist, album, song], ... ]
-        for (ArrayList<String> song : data) {
-            data_string += song.get(0) + ":" + song.get(1) + ":" + song.get(2);
-            if (song != data.get(data.size() - 1)) {
-                data_string += ";";
-            }
-        }
-        Log.v("POSTRequeset", "POST: " + data_string);
+        Log.v("POSTRequeset", "POST: " + data);
 
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(uri[0]);
-
-            // Check for 403 forbidden
-            urlConnection = (HttpURLConnection) url.openConnection();
-            int responsecode = urlConnection.getResponseCode();
-            if (responsecode == HttpURLConnection.HTTP_FORBIDDEN) {
-                Log.w("POSTRequest", "Registering device IP");
-                // Register this IP adres
-                URL u = new URL("http://rickert.noip.me/register_ip?key=hoerenneukennooitmeerwerken");
-                u.openStream().close();
-            }
-            // Reconnect
-            urlConnection.disconnect();
             urlConnection = (HttpURLConnection) url.openConnection();
 
             urlConnection.setDoInput(true);
@@ -62,7 +41,7 @@ public class POSTRequest extends AsyncTask<String, String, String> {
             OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
 
             // Write data and close outputstream
-            out.write(data_string.getBytes());
+            out.write(data.getBytes());
             out.close();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));

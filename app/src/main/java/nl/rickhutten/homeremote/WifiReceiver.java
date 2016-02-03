@@ -35,7 +35,7 @@ public class WifiReceiver extends BroadcastReceiver {
                         play.execute("http://rickert.noip.me/play");
                     }
                 });
-                register.execute("http://rickert.noip.me/register_ip?key=hoerenneukennooitmeerwerken");
+//                register.execute("http://rickert.noip.me/register_ip?key=hoerenneukennooitmeerwerken");
             } else {
                 // I am not home
                 System.out.println(ssid);

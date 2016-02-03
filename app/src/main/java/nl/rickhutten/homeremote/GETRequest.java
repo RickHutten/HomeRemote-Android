@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-class GETRequest extends AsyncTask<String, String, String> {
+public class GETRequest extends AsyncTask<String, String, String> {
 
     private OnTaskCompleted listener;
 
@@ -38,15 +38,15 @@ class GETRequest extends AsyncTask<String, String, String> {
         } catch (IOException e) {
             if (e.getClass() == FileNotFoundException.class && urlConnection != null) {
                 try {
-                    // 403 Forbidden, need to register device IP
+                    // 401 Unauthorised, need to register device IP
                     Integer responsecode = urlConnection.getResponseCode();
-                    if (responsecode == HttpURLConnection.HTTP_FORBIDDEN) {
+                    if (responsecode == HttpURLConnection.HTTP_UNAUTHORIZED) {
                         Log.v("GETRequest", "Registering device IP");
                         // Register this IP adres
                         URL u = new URL("http://rickert.noip.me/register_ip?key=hoerenneukennooitmeerwerken");
                         u.openStream().close();
                     } else {
-                        // Other response code than 403
+                        // Other response code than 401
                         Log.w("GETRequest", "Response code: " + responsecode.toString());
                     }
                     // Call GET request again now that we have registered

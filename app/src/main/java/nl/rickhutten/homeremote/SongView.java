@@ -28,7 +28,7 @@ public class SongView extends RelativeLayout {
         this.album = album;
     }
 
-    public void set(final MusicControlView musicControlView, final ArrayList<ArrayList<String>> queue,
+    public void set(final ArrayList<ArrayList<String>> queue,
                     int position, int length) {
         // Queue => [ [artist, album, song], ... ]
         ArrayList<String> songList = queue.get(position);
@@ -42,6 +42,15 @@ public class SongView extends RelativeLayout {
             ((TextView) findViewById(R.id.length)).setText(minutes + ":" + seconds);
         }
 
+        String data_string = "";
+        for (ArrayList<String> song : queue) {
+            data_string += song.get(0) + ":" + song.get(1) + ":" + song.get(2);
+            if (song != queue.get(queue.size() - 1)) {
+                data_string += ";";
+            }
+        }
+        final String data = data_string;
+
         findViewById(R.id.container).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,18 +60,14 @@ public class SongView extends RelativeLayout {
                         SharedPreferences sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
                         SharedPreferences.Editor e = sp.edit();
                         e.putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp);
-                        e.putString("artist", artist);
-                        e.putString("album", album);
-                        e.putString("song", title);
-                        e.commit();
-
-                        musicControlView.update();
+                        e.apply();
+                        // Dont update musicControlView, its updated from push notification
                     }
                 });
                 r.execute("http://rickert.noip.me/play/" + artist.replace(" ", "_") + "/" +
                         album.replace(" ", "_") + "/" + title.replace(" ", "_"));
 
-                POSTRequest p = new POSTRequest(queue, new OnTaskCompleted() {
+                POSTRequest p = new POSTRequest(data, new OnTaskCompleted() {
                     @Override
                     public void onTaskCompleted(String result) {
                         Log.i("SongView", "POSTRequest result: " + result);

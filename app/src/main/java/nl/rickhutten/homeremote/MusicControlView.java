@@ -41,18 +41,9 @@ public class MusicControlView extends RelativeLayout {
                 GETRequest next = new GETRequest(new OnTaskCompleted() {
                     @Override
                     public void onTaskCompleted(String result) {
-                        String[] split = result.split(";");
-
                         // Put values in sharedpreferences
-                        SharedPreferences.Editor editor = sp.edit();
-                        editor.putString("artist", split[0]);
-                        editor.putString("album", split[1]);
-                        editor.putString("song", split[2]);
-                        editor.putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp);
-                        editor.commit();
-
-                        // Update view
-                        update();
+                        sp.edit().putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp).apply();
+                        // Dont update musicControlView, its updated from push notification
                     }
                 });
                 next.execute("http://rickert.noip.me/next");
@@ -65,18 +56,9 @@ public class MusicControlView extends RelativeLayout {
                 GETRequest next = new GETRequest(new OnTaskCompleted() {
                     @Override
                     public void onTaskCompleted(String result) {
-                        String[] split = result.split(";");
-
                         // Put values in sharedpreferences
-                        SharedPreferences.Editor editor = sp.edit();
-                        editor.putString("artist", split[0]);
-                        editor.putString("album", split[1]);
-                        editor.putString("song", split[2]);
-                        editor.putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp);
-                        editor.commit();
-
-                        // Update view
-                        update();
+                        sp.edit().putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp).apply();
+                        // Dont update musicControlView, its updated from push notification
                     }
                 });
                 next.execute("http://rickert.noip.me/previous");

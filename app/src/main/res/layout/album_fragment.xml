@@ -12,11 +12,15 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <RelativeLayout
-                android:id="@+id/scrollLayout"
+            <GridView
+                android:id="@+id/gridview"
+                android:numColumns="3"
+                android:gravity="center"
+                android:columnWidth="120dp"
+                android:stretchMode="columnWidth"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </RelativeLayout>
+                android:layout_height="50000dp">
+            </GridView>
             <RelativeLayout
                 android:id="@+id/spacing"
                 android:layout_width="match_parent"

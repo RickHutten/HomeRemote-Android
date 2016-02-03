@@ -13,8 +13,8 @@ import java.util.Arrays;
 import java.util.Collections;
 public class ArtistFragment extends Fragment {
 
-    ViewGroup layout;
-    MainActivity mainActivity;
+    private ViewGroup layout;
+    private MainActivity mainActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

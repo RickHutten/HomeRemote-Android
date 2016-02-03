@@ -12,3 +12,4 @@ gradlew.bat
 gradlew
 gradle/
 app.iml
+app/google-services.json

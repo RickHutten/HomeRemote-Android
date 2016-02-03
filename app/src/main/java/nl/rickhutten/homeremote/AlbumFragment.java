@@ -1,11 +1,17 @@
 package nl.rickhutten.homeremote;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.GridLayout;
+import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -14,8 +20,8 @@ import java.util.Collections;
 
 public class AlbumFragment extends Fragment {
 
-    ViewGroup layout;
-    MainActivity mainActivity;
+    private ViewGroup layout;
+    private MainActivity mainActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,39 +41,64 @@ public class AlbumFragment extends Fragment {
 
     private void setAlbums(String albums) {
         layout.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-        RelativeLayout scrollLayout = (RelativeLayout) layout.findViewById(R.id.scrollLayout);
         ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(albums.split(";")));
-
         Collections.sort(arrayList);
-        int i = 0;
-        for (String album : arrayList) {
-            AlbumCardView albumCardView = new AlbumCardView(getContext());
-            albumCardView.set(mainActivity, mainActivity.musicControlView);
-            albumCardView.setAlbum(album);
-            RelativeLayout.LayoutParams lp = null;
-            int width = getResources().getDimensionPixelSize(R.dimen.album_width);
-            int height = getResources().getDimensionPixelSize(R.dimen.album_height);
-            if (i % 3 == 0) {
-                // Make layoutparams
-                lp = new RelativeLayout.LayoutParams(
-                        width, height);
-                lp.setMargins(0, (int) Math.floor(i / 3) * height, 0, 0);
-            } else if (i % 3 == 1) {
-                // Make layoutparams
-                lp = new RelativeLayout.LayoutParams(
-                        width, height);
-                lp.setMargins(width, (int) Math.floor(i / 3) * height, 0, 0);
-            } else {
-                // Make layoutparams
-                lp = new RelativeLayout.LayoutParams(
-                        width, height);
-                lp.setMargins(2 * width, (int) Math.floor(i / 3) * height, 0, 0);
-            }
-            albumCardView.setLayoutParams(lp);
-            albumCardView.setWidth(120);
-            scrollLayout.addView(albumCardView, 0);
+        GridView gridview = (GridView) layout.findViewById(R.id.gridview);
+        AlbumAdapter albumAdapter = new AlbumAdapter(mainActivity);
+        albumAdapter.set(arrayList);
+        gridview.setAdapter(albumAdapter);
+        gridview.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(360), 173 * dpToPx(arrayList.size()/3 + 1)));
+    }
 
-            i += 1;
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    public class AlbumAdapter extends BaseAdapter {
+        private Context context;
+        private ArrayList<String> albumList;
+
+        // Gets the context so it can be used later
+        public AlbumAdapter(Context context) {
+            this.context = context;
+        }
+
+        public void set(ArrayList<String> albumList) {
+            this.albumList = albumList;
+        }
+
+        // Total number of things contained within the adapter
+        public int getCount() {
+            return albumList.size();
+        }
+
+        // Require for structure, not really used in my code.
+        public Object getItem(int position) {
+            return null;
+        }
+
+        // Require for structure, not really used in my code. Can
+        // be used to get the id of an item in the adapter for
+        // manual control.
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            AlbumCardView albumCardView;
+            if (convertView == null) {
+                // if it's not recycled, initialize some attributes
+                albumCardView = new AlbumCardView(context);
+                albumCardView.set((MainActivity)context, ((MainActivity)context).musicControlView);
+            }
+            else {
+                albumCardView = (AlbumCardView) convertView;
+            }
+            albumCardView.setAlbum(albumList.get(position));
+            albumCardView.setWidth(120);
+
+            return albumCardView;
         }
     }
 }

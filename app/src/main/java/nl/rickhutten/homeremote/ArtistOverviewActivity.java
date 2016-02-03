@@ -1,10 +1,13 @@
 package nl.rickhutten.homeremote;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,6 +46,7 @@ public class ArtistOverviewActivity extends AppCompatActivity {
     public MusicControlView musicControlView;
     private LinearLayout songContainer;
     private ArtistOverviewActivity artistOverviewActivity = this;
+    private BroadcastReceiver broadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +98,14 @@ public class ArtistOverviewActivity extends AppCompatActivity {
             }
         });
         getArtists.execute("http://rickert.noip.me/get/" + artistName.replace(" ", "_"));
+
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.i("ArtistOverviewActivity", "Push Received!");
+                musicControlView.update();
+            }
+        };
     }
 
     private void setAlbums() {
@@ -139,7 +151,7 @@ public class ArtistOverviewActivity extends AppCompatActivity {
             }
 
             SongView songView = new SongView(this, artistName, album);
-            songView.set(musicControlView, queue, i, lengthList.get(i));
+            songView.set(queue, i, lengthList.get(i));
             songContainer.addView(songView);
         }
         View v = new View(this);
@@ -151,6 +163,14 @@ public class ArtistOverviewActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         musicControlView.update();
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
+                new IntentFilter("pushReceived"));
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+        super.onPause();
     }
 
     @Override
