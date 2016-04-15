@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.service;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +22,7 @@ public class MyGcmListenerService extends GcmListenerService {
         String artist = data.getString("artist");
         String album = data.getString("album");
         String song = data.getString("song");
+        int duration = Integer.parseInt(data.getString("duration"));
 
         Log.v("GcmListenerService", "Artist: " + artist + " Album: " + album + " Song: " + song);
 
@@ -30,6 +31,7 @@ public class MyGcmListenerService extends GcmListenerService {
         editor.putString("artist", artist);
         editor.putString("album", album);
         editor.putString("song", song);
+        editor.putInt("duration", duration);
         editor.apply();
 
         // Notify UI that registration has completed, so the progress indicator can be hidden.

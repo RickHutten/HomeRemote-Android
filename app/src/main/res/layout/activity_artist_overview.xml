@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:id="@+id/activity_artist_overview_container"
-    tools:context="nl.rickhutten.homeremote.ArtistOverviewActivity" >
+    tools:context=".activity.ArtistOverviewActivity" >
 
     <ImageView
         android:id="@+id/topview"

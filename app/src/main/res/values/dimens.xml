@@ -5,11 +5,13 @@
     <dimen name="play_bar_height">72dp</dimen>
     <dimen name="artist_card_height">64dp</dimen>
     <dimen name="artist_shufflebutton_padding">18dp</dimen>
-    <dimen name="album_width">120dp</dimen>
-    <dimen name="album_height">173dp</dimen>
-    <dimen name="album_image_size">104dp</dimen>
+    <dimen name="album_width">130dp</dimen>
+    <dimen name="album_height">188dp</dimen>
+    <dimen name="album_image_size">114dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="album_list_item_height">72dp</dimen>
+    <dimen name="album_card_view_image_width">80dp</dimen>
+    <dimen name="album_card_view_image_height">80dp</dimen>
 
     <dimen name="artist_title">38sp</dimen>
 </resources>

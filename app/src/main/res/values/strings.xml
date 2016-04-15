@@ -2,6 +2,8 @@
     <string name="app_name">Home Remote</string>
     <string name="gcm_senderId">1437002410555</string>
     <string name="action_volume">Set volume</string>
+    <string name="action_shutdown">Shutdown</string>
+    <string name="shutdown_message">Shutting down server</string>
 
     <string-array name="tabTitles">
         <item>Artists</item>

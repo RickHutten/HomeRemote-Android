@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.view;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,16 +10,28 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.Random;
+
+import nl.rickhutten.homeremote.GETRequest;
+import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.R;
+
 public class MusicControlView extends RelativeLayout {
-    ViewGroup rootView;
-    SharedPreferences sp;
+    private ViewGroup rootView;
+    private SharedPreferences sp;
+    private boolean active;
+    public int ID;
+    private boolean newSongComming;
+    private MusicProgressView progressView;
 
     public MusicControlView(Context context) {
         super(context);
+        ID = new Random().nextInt(1000);
         // Inflate layout from XML file
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         rootView = (ViewGroup) inflater.inflate(R.layout.music_control_view, this, false);
         addView(rootView);
+        this.setClipChildren(false);
 
         this.setTransitionName("musicControlView");
         sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
@@ -42,7 +54,7 @@ public class MusicControlView extends RelativeLayout {
                     @Override
                     public void onTaskCompleted(String result) {
                         // Put values in sharedpreferences
-                        sp.edit().putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp).apply();
+                        sp.edit().putInt("playpause", R.drawable.ic_pause_circle_outline_black_48dp).apply();
                         // Dont update musicControlView, its updated from push notification
                     }
                 });
@@ -57,14 +69,13 @@ public class MusicControlView extends RelativeLayout {
                     @Override
                     public void onTaskCompleted(String result) {
                         // Put values in sharedpreferences
-                        sp.edit().putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp).apply();
+                        sp.edit().putInt("playpause", R.drawable.ic_pause_circle_outline_black_48dp).apply();
                         // Dont update musicControlView, its updated from push notification
                     }
                 });
                 next.execute("http://rickert.noip.me/previous");
             }
         });
-
 
         // Don't let the container let touches get 'through'
         findViewById(R.id.music_control_view_container).setOnTouchListener(new OnTouchListener() {
@@ -92,22 +103,22 @@ public class MusicControlView extends RelativeLayout {
                     artist + " - " + song);
         }
 
-    }
-
-    public void setPlayPause(int id) {
-        sp.edit().putInt("playpause", id).apply();
-        ((ImageView)findViewById(R.id.playPause)).setImageResource(id);
+        progressView = (MusicProgressView) findViewById(R.id.progressBar);
+        progressView.setMusicControlView(this);
+        progressView.startCountdown(sp);
     }
 
     public boolean isPlaying() {
-        return sp.getInt("playpause", 0) == R.drawable.ic_pause_circle_outline_white_48dp;
+        return !sp.getBoolean("paused", true);
     }
 
     private void pauseMusic() {
         GETRequest r = new GETRequest(new OnTaskCompleted() {
             @Override
             public void onTaskCompleted(String result) {
-                setPlayPause(R.drawable.ic_play_circle_outline_white_48dp);
+                sp.edit().putBoolean("paused", true).apply();
+                ((ImageView)findViewById(R.id.playPause))
+                        .setImageResource(R.drawable.ic_play_circle_outline_black_48dp);
             }
         });
         r.execute("http://rickert.noip.me/pause");
@@ -117,10 +128,35 @@ public class MusicControlView extends RelativeLayout {
         GETRequest r = new GETRequest(new OnTaskCompleted() {
             @Override
             public void onTaskCompleted(String result) {
-                setPlayPause(R.drawable.ic_pause_circle_outline_white_48dp);
+                sp.edit().putBoolean("paused", false).apply();
+                ((ImageView)findViewById(R.id.playPause))
+                        .setImageResource(R.drawable.ic_pause_circle_outline_black_48dp);
             }
         });
         r.execute("http://rickert.noip.me/resume");
     }
 
+    public boolean isViewActive() {
+        return this.active;
+    }
+
+    public void setActive(boolean b) {
+        this.active = b;
+        if (!b) {
+            // If not active, save the progress in shared preferences
+            sp.edit().putFloat("progress", progressView.getSeconds()).commit();
+        }
+    }
+
+    public void setNewSongComming(boolean newSongComming) {
+        if (newSongComming) {
+            sp.edit().putFloat("progress", 0f).commit();
+        }
+        this.newSongComming = newSongComming;
+
+    }
+
+    public boolean isNewSongComming() {
+        return this.newSongComming;
+    }
 }

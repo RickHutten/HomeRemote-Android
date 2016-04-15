@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,11 +18,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import java.util.ArrayList;
+import nl.rickhutten.homeremote.GETRequest;
+import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.fragment.PlaylistFragment;
+import nl.rickhutten.homeremote.R;
+import nl.rickhutten.homeremote.service.RegistrationIntentService;
+import nl.rickhutten.homeremote.view.SlidingTabLayout;
+import nl.rickhutten.homeremote.fragment.AlbumFragment;
+import nl.rickhutten.homeremote.fragment.ArtistFragment;
+import nl.rickhutten.homeremote.view.MusicControlView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.i("MainActivity", "Push Received!");
+                musicControlView.setNewSongComming(true);
                 musicControlView.update();
             }
         };
@@ -79,14 +89,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        musicControlView.update();
+        Log.i("MainActivity", "onResume MusicControlView ID: " + musicControlView.ID);
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter("pushReceived"));
+        musicControlView.setActive(true);
+        musicControlView.update();
     }
 
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+        Log.i("MainActivity", "onPause MusicControlView ID: " + musicControlView.ID);
+        musicControlView.setActive(false);
         super.onPause();
     }
 
@@ -104,6 +118,14 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_volume:
                 Intent intent = new Intent(this, VolumeControlActivity.class);
                 startActivity(intent);
+                return true;
+            case R.id.action_shutdown:
+                new GETRequest(new OnTaskCompleted() {
+                    @Override
+                    public void onTaskCompleted(String result) {
+                        Toast.makeText(getApplicationContext(), getString(R.string.shutdown_message), Toast.LENGTH_LONG).show();
+                    }
+                }).execute("http://rickert.noip.me/shutdown");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

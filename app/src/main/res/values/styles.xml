@@ -1,11 +1,26 @@
 <resources>
 
+
+    <style name="NoActionBarTheme" parent="@style/BaseTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="ActionBarTheme" parent="@style/BaseTheme">
+        <item name="windowNoTitle">false</item>
+        <item name="windowActionBar">true</item>
+        <item name="windowActionBarOverlay">true</item>
+        <item name="windowActionModeOverlay">false</item>
+        <item name="actionBarStyle">@style/TransparentActionBar</item>
+        <item name="android:actionBarStyle">@style/TransparentActionBar</item>
+    </style>
+
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowActivityTransitions">true</item>
         <!-- specify enter and exit transitions -->
         <item name="android:windowEnterTransition">@transition/slide_bottom</item>
-        <item name="android:windowExitTransition">@android:transition/fade</item>
+        <item name="android:windowExitTransition">@android:transition/no_transition</item>
 
         <!-- specify shared element transitions -->
         <item name="android:windowSharedElementEnterTransition">@transition/slide</item>
@@ -15,15 +30,12 @@
         <item name="android:windowReenterTransition">@null</item>
         <item name="android:windowAllowReturnTransitionOverlap">false</item>
 
+        <item name="android:textColorSecondary">@color/white</item>
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/accent</item>
         <item name="android:textColor">@color/textColor</item>
     </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="TransparentTheme" parent="android:Theme.Material.Light.Dialog.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
@@ -32,6 +44,14 @@
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:backgroundDimAmount">0.2</item>
         <item name="android:seekBarStyle">@android:style/Widget.Material.Light.SeekBar</item>
+    </style>
+
+    <style name="TransparentActionBar" parent="@android:style/Widget.Material.Light.ActionBar">
+        <item name="background">@drawable/black_trans_gradient</item>
+        <item name="android:background">@drawable/black_trans_gradient</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:windowEnterTransition">@android:transition/no_transition</item>
     </style>
 
 </resources>

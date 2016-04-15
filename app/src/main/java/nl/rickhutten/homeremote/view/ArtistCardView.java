@@ -1,10 +1,9 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.view;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -12,6 +11,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import nl.rickhutten.homeremote.activity.ArtistOverviewActivity;
+import nl.rickhutten.homeremote.R;
+import nl.rickhutten.homeremote.Utils;
 
 public class ArtistCardView extends RelativeLayout {
 
@@ -53,7 +56,8 @@ public class ArtistCardView extends RelativeLayout {
         artistTextView.setText(artist);
         final int id = generateViewId();
         artistTextView.setId(id);
-        artistTextView.setPadding(dpToPx(6), dpToPx(6), dpToPx(6), dpToPx(6));
+        int dp = Utils.dpToPx(context, 6);
+        artistTextView.setPadding(dp, dp, dp, dp);
         artistTextView.setWidth(card.getWidth());
         artistTextView.setBackgroundResource(R.drawable.ripple);
         artistTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
@@ -74,10 +78,5 @@ public class ArtistCardView extends RelativeLayout {
         });
 
         card.addView(artistTextView);
-    }
-
-    public int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 }

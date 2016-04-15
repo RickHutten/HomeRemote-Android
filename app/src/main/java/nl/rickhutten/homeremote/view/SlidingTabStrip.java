@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.view;
 
 import android.R;
 import android.content.Context;

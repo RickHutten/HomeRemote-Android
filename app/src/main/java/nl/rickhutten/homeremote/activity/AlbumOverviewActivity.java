@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -25,6 +25,12 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import nl.rickhutten.homeremote.GETRequest;
+import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.R;
+import nl.rickhutten.homeremote.view.SongView;
+import nl.rickhutten.homeremote.view.MusicControlView;
+
 public class AlbumOverviewActivity extends AppCompatActivity {
 
     private ArrayList<String> songs;
@@ -40,6 +46,8 @@ public class AlbumOverviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_album_overview);
 
         sp = getSharedPreferences("prefs", MODE_PRIVATE);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Add view to main activity
         musicControlView = new MusicControlView(this);
@@ -72,6 +80,7 @@ public class AlbumOverviewActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.i("AlbumOverviewActivity", "Push Received!");
+                musicControlView.setNewSongComming(true);
                 musicControlView.update();
             }
         };
@@ -119,14 +128,18 @@ public class AlbumOverviewActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        musicControlView.update();
+        Log.i("AlbumOverviewActivity", "onResume MusicControlView ID: " + musicControlView.ID);
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter("pushReceived"));
+        musicControlView.setActive(true);
+        musicControlView.update();
     }
 
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+        Log.i("AlbumOverviewActivity", "onPause MusicControlView ID: " + musicControlView.ID);
+        musicControlView.setActive(false);
         super.onPause();
     }
 
@@ -150,6 +163,9 @@ public class AlbumOverviewActivity extends AppCompatActivity {
             case R.id.action_volume:
                 Intent intent = new Intent(this, VolumeControlActivity.class);
                 startActivity(intent);
+                return true;
+            case android.R.id.home:
+                onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

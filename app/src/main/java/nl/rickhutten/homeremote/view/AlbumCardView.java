@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.view;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,12 +14,18 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import nl.rickhutten.homeremote.activity.AlbumOverviewActivity;
+import nl.rickhutten.homeremote.R;
+import nl.rickhutten.homeremote.Utils;
+
 public class AlbumCardView extends RelativeLayout {
 
     private View rootView;
     private Context context;
     private Activity activity;
     private MusicControlView musicControlView;
+    private int width;
+    private int height;
 
     public AlbumCardView(Context context) {
         super(context);
@@ -51,7 +56,11 @@ public class AlbumCardView extends RelativeLayout {
 
         // Download image and load into imageview
         Picasso.with(context).load("http://rickert.noip.me/image/" + artistFormat + "/" + albumFormat)
-                .config(Bitmap.Config.RGB_565).into(albumImage);
+                .config(Bitmap.Config.RGB_565)
+                .resizeDimen(
+                        R.dimen.album_card_view_image_width,
+                        R.dimen.album_card_view_image_height)
+                .into(albumImage);
 
         rootView.findViewById(R.id.cardView).setOnClickListener(new OnClickListener() {
             @Override
@@ -74,18 +83,23 @@ public class AlbumCardView extends RelativeLayout {
         View cardView = rootView.findViewById(R.id.cardView);
         View imageView = rootView.findViewById(R.id.albumImage);
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) cardView.getLayoutParams();
-        lp.width = dpToPx(dp);
-        lp.height = dpToPx(((Double) (dp * 13 / 9.0)).intValue());
+        lp.width = Utils.dpToPx(context, dp);
+        lp.height = Utils.dpToPx(context, (dp * 13 / 9));
+        this.width = lp.width;
+        this.height = lp.height;
         cardView.setLayoutParams(lp);
 
         RelativeLayout.LayoutParams lp2 = (RelativeLayout.LayoutParams) imageView.getLayoutParams();
-        lp2.width = dpToPx(dp - 16);
-        lp2.height = dpToPx(dp - 16);
+        lp2.width = Utils.dpToPx(context, dp - 16);
+        lp2.height = Utils.dpToPx(context, dp - 16);
         imageView.setLayoutParams(lp2);
     }
 
-    public int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    public int getViewWidth() {
+        return width;
+    }
+
+    public int getViewHeight() {
+        return height;
     }
 }

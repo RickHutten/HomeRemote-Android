@@ -1,9 +1,13 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.activity;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.SeekBar;
+
+import nl.rickhutten.homeremote.GETRequest;
+import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.R;
 
 public class VolumeControlActivity extends Activity {
     @Override

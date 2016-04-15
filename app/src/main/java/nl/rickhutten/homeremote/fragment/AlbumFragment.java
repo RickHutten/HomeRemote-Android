@@ -1,22 +1,26 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+
+import nl.rickhutten.homeremote.GETRequest;
+import nl.rickhutten.homeremote.activity.MainActivity;
+import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.R;
+import nl.rickhutten.homeremote.Utils;
+import nl.rickhutten.homeremote.view.AlbumCardView;
 
 public class AlbumFragment extends Fragment {
 
@@ -47,12 +51,10 @@ public class AlbumFragment extends Fragment {
         AlbumAdapter albumAdapter = new AlbumAdapter(mainActivity);
         albumAdapter.set(arrayList);
         gridview.setAdapter(albumAdapter);
-        gridview.setLayoutParams(new LinearLayout.LayoutParams(dpToPx(360), 173 * dpToPx(arrayList.size()/3 + 1)));
-    }
+        // Get the height of the first view
+        int itemHeight = ((AlbumCardView)albumAdapter.getView(0, null, null)).getViewHeight();
 
-    public int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        gridview.setLayoutParams(new LinearLayout.LayoutParams(Utils.getScreenWidth(getContext()), itemHeight * (int)(Math.ceil(arrayList.size()/3))));
     }
 
     public class AlbumAdapter extends BaseAdapter {
@@ -96,7 +98,7 @@ public class AlbumFragment extends Fragment {
                 albumCardView = (AlbumCardView) convertView;
             }
             albumCardView.setAlbum(albumList.get(position));
-            albumCardView.setWidth(120);
+            albumCardView.setWidth(Utils.pxToDp(getContext(), Utils.getScreenWidth(getContext()) / 3));
 
             return albumCardView;
         }

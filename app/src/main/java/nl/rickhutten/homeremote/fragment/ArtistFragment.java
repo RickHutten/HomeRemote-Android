@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +11,13 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+
+import nl.rickhutten.homeremote.GETRequest;
+import nl.rickhutten.homeremote.activity.MainActivity;
+import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.R;
+import nl.rickhutten.homeremote.view.ArtistCardView;
+
 public class ArtistFragment extends Fragment {
 
     private ViewGroup layout;

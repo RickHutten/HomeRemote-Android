@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.view;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,6 +10,11 @@ import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+
+import nl.rickhutten.homeremote.GETRequest;
+import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.POSTRequest;
+import nl.rickhutten.homeremote.R;
 
 public class SongView extends RelativeLayout {
 
@@ -59,7 +64,7 @@ public class SongView extends RelativeLayout {
                     public void onTaskCompleted(String result) {
                         SharedPreferences sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
                         SharedPreferences.Editor e = sp.edit();
-                        e.putInt("playpause", R.drawable.ic_pause_circle_outline_white_48dp);
+                        e.putInt("playpause", R.drawable.ic_pause_circle_outline_black_48dp);
                         e.apply();
                         // Dont update musicControlView, its updated from push notification
                     }

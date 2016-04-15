@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.service;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -11,6 +11,10 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
+
+import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.POSTRequest;
+import nl.rickhutten.homeremote.R;
 
 public class RegistrationIntentService extends IntentService {
 
