@@ -12,9 +12,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import nl.rickhutten.homeremote.GETRequest;
+import nl.rickhutten.homeremote.URL;
+import nl.rickhutten.homeremote.net.GETRequest;
 import nl.rickhutten.homeremote.activity.MainActivity;
-import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.net.OnTaskCompleted;
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.view.ArtistCardView;
 
@@ -35,7 +36,7 @@ public class ArtistFragment extends Fragment {
                 }
             }
         });
-        getArtists.execute("http://rickert.noip.me/artists");
+        getArtists.execute(URL.getUrl(mainActivity, "/artists"));
         return layout;
     }
 

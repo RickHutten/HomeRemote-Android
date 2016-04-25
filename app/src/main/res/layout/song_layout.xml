@@ -15,9 +15,19 @@
         android:textSize="14sp"
         android:text="4:32" />
 
+    <ImageView
+        android:id="@+id/playIcon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:visibility="visible"
+        android:alpha="0.5"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/length"
+        android:src="@drawable/ic_play_light"/>
+
     <TextView
         android:id="@+id/songName"
-        android:layout_toStartOf="@id/length"
+        android:layout_toLeftOf="@id/playIcon"
         android:singleLine="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

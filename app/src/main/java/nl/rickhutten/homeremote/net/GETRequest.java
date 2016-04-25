@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.net;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -73,7 +73,9 @@ public class GETRequest extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        listener.onTaskCompleted(result);
+        if (listener != null) {
+            listener.onTaskCompleted(result);
+        }
     }
 
 }

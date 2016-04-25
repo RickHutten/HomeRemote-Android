@@ -1,9 +1,8 @@
-package nl.rickhutten.homeremote.service;
+package nl.rickhutten.homeremote.gcm;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmPubSub;
@@ -12,8 +11,8 @@ import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
 
-import nl.rickhutten.homeremote.OnTaskCompleted;
-import nl.rickhutten.homeremote.POSTRequest;
+import nl.rickhutten.homeremote.net.OnTaskCompleted;
+import nl.rickhutten.homeremote.net.POSTRequest;
 import nl.rickhutten.homeremote.R;
 
 public class RegistrationIntentService extends IntentService {

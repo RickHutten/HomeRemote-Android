@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -25,11 +27,14 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import nl.rickhutten.homeremote.GETRequest;
-import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.URL;
+import nl.rickhutten.homeremote.net.GETRequest;
+import nl.rickhutten.homeremote.net.OnTaskCompleted;
 import nl.rickhutten.homeremote.R;
+import nl.rickhutten.homeremote.Utils;
 import nl.rickhutten.homeremote.view.SongView;
 import nl.rickhutten.homeremote.view.MusicControlView;
+import nl.rickhutten.homeremote.dialog.VolumeDialog;
 
 public class AlbumOverviewActivity extends AppCompatActivity {
 
@@ -47,7 +52,10 @@ public class AlbumOverviewActivity extends AppCompatActivity {
 
         sp = getSharedPreferences("prefs", MODE_PRIVATE);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         // Add view to main activity
         musicControlView = new MusicControlView(this);
@@ -68,10 +76,8 @@ public class AlbumOverviewActivity extends AppCompatActivity {
             }
         });
 
-        String artistFormat = artistName.replace(" ", "_");
-        String albumFormat = albumName.replace(" ", "_");
         // Download image and load into imageview
-        Picasso.with(this).load("http://rickert.noip.me/image/" + artistFormat + "/" + albumFormat)
+        Picasso.with(this).load(URL.getAlbumImageUrl(this, artistName, albumName))
                 .config(Bitmap.Config.RGB_565).into(topView);
 
         setAlbum();
@@ -161,11 +167,17 @@ public class AlbumOverviewActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_volume:
-                Intent intent = new Intent(this, VolumeControlActivity.class);
-                startActivity(intent);
+                // Show volume dialog
+                new VolumeDialog(this, R.style.ThemeDialog).show();
                 return true;
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.action_shutdown:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.ask_shutdown)
+                        .setPositiveButton("Yes", Utils.getDialogClickListener(this))
+                        .setNegativeButton("No", Utils.getDialogClickListener(this)).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

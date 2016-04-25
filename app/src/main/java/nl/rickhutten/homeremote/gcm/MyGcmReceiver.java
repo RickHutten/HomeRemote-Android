@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.gcm;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
-import nl.rickhutten.homeremote.service.MyGcmListenerService;
+import nl.rickhutten.homeremote.gcm.MyGcmListenerService;
 
 public class MyGcmReceiver extends WakefulBroadcastReceiver {
 

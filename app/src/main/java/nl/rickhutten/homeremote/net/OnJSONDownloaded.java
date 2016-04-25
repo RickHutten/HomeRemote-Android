@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote;
+package nl.rickhutten.homeremote.net;
 
 import org.json.JSONObject;
 

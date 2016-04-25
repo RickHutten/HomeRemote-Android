@@ -8,12 +8,12 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import nl.rickhutten.homeremote.GETRequest;
-import nl.rickhutten.homeremote.OnTaskCompleted;
-import nl.rickhutten.homeremote.POSTRequest;
+import nl.rickhutten.homeremote.URL;
+import nl.rickhutten.homeremote.net.GETRequest;
+import nl.rickhutten.homeremote.net.OnTaskCompleted;
+import nl.rickhutten.homeremote.net.POSTRequest;
 import nl.rickhutten.homeremote.R;
 
 public class SongView extends RelativeLayout {
@@ -22,6 +22,19 @@ public class SongView extends RelativeLayout {
     private Context context;
     private String artist;
     private String album;
+    private String title;
+    private SharedPreferences sp;
+    private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (!key.equals("song")) return;
+            System.out.println(title + sharedPreferences.getString("song", ""));
+            if (key.equals("song") && !sharedPreferences.getString("song", "").equals(title)) {
+                rootView.findViewById(R.id.playIcon).setVisibility(GONE);
+                sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+            }
+        }
+    };
 
     public SongView(Context context, String artist, String album) {
         super(context);
@@ -37,7 +50,17 @@ public class SongView extends RelativeLayout {
                     int position, int length) {
         // Queue => [ [artist, album, song], ... ]
         ArrayList<String> songList = queue.get(position);
-        final String title = songList.get(2);
+        title = songList.get(2);
+
+        sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        final String artist_saved = sp.getString("artist", null);
+        final String album_saved = sp.getString("album", null);
+        final String song_saved = sp.getString("song", null);
+
+        if (!artist.equals(artist_saved) || !album.equals(album_saved) || !title.equals(song_saved)) {
+            rootView.findViewById(R.id.playIcon).setVisibility(GONE);
+        }
+
         ((TextView)findViewById(R.id.songName)).setText(title);
         int minutes = length / 60;
         int seconds = length % 60;
@@ -62,15 +85,16 @@ public class SongView extends RelativeLayout {
                 GETRequest r = new GETRequest(new OnTaskCompleted() {
                     @Override
                     public void onTaskCompleted(String result) {
-                        SharedPreferences sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+                        rootView.findViewById(R.id.playIcon).setVisibility(VISIBLE);
+                        sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
                         SharedPreferences.Editor e = sp.edit();
                         e.putInt("playpause", R.drawable.ic_pause_circle_outline_black_48dp);
-                        e.apply();
+                        e.commit();
                         // Dont update musicControlView, its updated from push notification
+                        sp.registerOnSharedPreferenceChangeListener(listener);
                     }
                 });
-                r.execute("http://rickert.noip.me/play/" + artist.replace(" ", "_") + "/" +
-                        album.replace(" ", "_") + "/" + title.replace(" ", "_"));
+                r.execute(URL.getPlaySongUrl(context, artist, album, title));
 
                 POSTRequest p = new POSTRequest(data, new OnTaskCompleted() {
                     @Override
@@ -78,8 +102,10 @@ public class SongView extends RelativeLayout {
                         Log.i("SongView", "POSTRequest result: " + result);
                     }
                 });
-                p.execute("http://rickert.noip.me/set/queue");
+                p.execute(URL.getQueueUrl(context));
             }
         });
     }
+
+
 }

@@ -15,9 +15,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import nl.rickhutten.homeremote.GETRequest;
+import nl.rickhutten.homeremote.URL;
+import nl.rickhutten.homeremote.net.GETRequest;
 import nl.rickhutten.homeremote.activity.MainActivity;
-import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.net.OnTaskCompleted;
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.Utils;
 import nl.rickhutten.homeremote.view.AlbumCardView;
@@ -39,7 +40,7 @@ public class AlbumFragment extends Fragment {
                 }
             }
         });
-        getArtists.execute("http://rickert.noip.me/albums");
+        getArtists.execute(URL.getUrl(mainActivity, "/albums"));
         return layout;
     }
 
@@ -97,7 +98,7 @@ public class AlbumFragment extends Fragment {
             else {
                 albumCardView = (AlbumCardView) convertView;
             }
-            albumCardView.setAlbum(albumList.get(position));
+            albumCardView.setAlbum(albumList.get(position).split(":")[0], albumList.get(position).split(":")[1]);
             albumCardView.setWidth(Utils.pxToDp(getContext(), Utils.getScreenWidth(getContext()) / 3));
 
             return albumCardView;

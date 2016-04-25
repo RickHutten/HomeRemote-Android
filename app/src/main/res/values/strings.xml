@@ -4,6 +4,10 @@
     <string name="action_volume">Set volume</string>
     <string name="action_shutdown">Shutdown</string>
     <string name="shutdown_message">Shutting down server</string>
+    <string name="ask_shutdown">Are you sure you want to shutdown the server?</string>
+    <string name="url_base">http://rickert.noip.me</string>
+    <string name="to_artist">Go to artist</string>
+    <string name="to_album">Go to album</string>
 
     <string-array name="tabTitles">
         <item>Artists</item>

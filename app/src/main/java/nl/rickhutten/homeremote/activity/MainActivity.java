@@ -4,13 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,27 +18,22 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import nl.rickhutten.homeremote.GETRequest;
-import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.Utils;
 import nl.rickhutten.homeremote.fragment.PlaylistFragment;
 import nl.rickhutten.homeremote.R;
-import nl.rickhutten.homeremote.service.RegistrationIntentService;
+import nl.rickhutten.homeremote.gcm.RegistrationIntentService;
 import nl.rickhutten.homeremote.view.SlidingTabLayout;
 import nl.rickhutten.homeremote.fragment.AlbumFragment;
 import nl.rickhutten.homeremote.fragment.ArtistFragment;
 import nl.rickhutten.homeremote.view.MusicControlView;
+import nl.rickhutten.homeremote.dialog.VolumeDialog;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
-    private ViewPager mPager;
-    private SlidingTabLayout mTabs;
-    private SharedPreferences sp;
     public MusicControlView musicControlView;
     private BroadcastReceiver broadcastReceiver;
 
@@ -46,20 +41,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        sp = getSharedPreferences("prefs", MODE_PRIVATE);
 
         // Add view to main activity
         musicControlView = new MusicControlView(this);
         ((RelativeLayout) findViewById(R.id.activity_main_container)).addView(musicControlView);
 
-        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        mPager = (ViewPager) findViewById(R.id.pager);
+        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
-        mTabs = (SlidingTabLayout) findViewById(R.id.tabs);
+        SlidingTabLayout mTabs = (SlidingTabLayout) findViewById(R.id.tabs);
         int[] colors = {0, 0, 0};
         colors[0] = getResources().getColor(R.color.white);
         colors[1] = getResources().getColor(R.color.white);
@@ -116,16 +109,14 @@ public class MainActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_volume:
-                Intent intent = new Intent(this, VolumeControlActivity.class);
-                startActivity(intent);
+                // Show volume dialog
+                new VolumeDialog(this, R.style.ThemeDialog).show();
                 return true;
             case R.id.action_shutdown:
-                new GETRequest(new OnTaskCompleted() {
-                    @Override
-                    public void onTaskCompleted(String result) {
-                        Toast.makeText(getApplicationContext(), getString(R.string.shutdown_message), Toast.LENGTH_LONG).show();
-                    }
-                }).execute("http://rickert.noip.me/shutdown");
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.ask_shutdown)
+                        .setPositiveButton("Yes", Utils.getDialogClickListener(this))
+                        .setNegativeButton("No", Utils.getDialogClickListener(this)).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

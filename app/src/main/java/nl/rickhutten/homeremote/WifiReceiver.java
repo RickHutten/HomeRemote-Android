@@ -8,11 +8,14 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.widget.Toast;
 
+import nl.rickhutten.homeremote.net.GETRequest;
+import nl.rickhutten.homeremote.net.OnTaskCompleted;
+
 
 public class WifiReceiver extends BroadcastReceiver {
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, Intent intent) {
 
         NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
         if(info != null) {
@@ -23,19 +26,15 @@ public class WifiReceiver extends BroadcastReceiver {
             Toast.makeText(context, ssid, Toast.LENGTH_SHORT).show();
 
             if (ssid.contains("Wie dit leest is gek")) {
-                final GETRequest play = new GETRequest(new OnTaskCompleted() {
-                    @Override
-                    public void onTaskCompleted(String result) {
-                    }
-                });
+                final GETRequest play = new GETRequest(null);
 
                 GETRequest register = new GETRequest(new OnTaskCompleted() {
                     @Override
                     public void onTaskCompleted(String result) {
-                        play.execute("http://rickert.noip.me/play");
+                        play.execute(URL.getUrl(context, "/play"));
                     }
                 });
-//                register.execute("http://rickert.noip.me/register_ip?key=hoerenneukennooitmeerwerken");
+                register.execute(URL.getRegisterUrl(context));
             } else {
                 // I am not home
                 System.out.println(ssid);

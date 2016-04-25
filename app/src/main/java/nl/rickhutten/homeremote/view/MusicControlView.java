@@ -1,23 +1,31 @@
 package nl.rickhutten.homeremote.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Random;
 
-import nl.rickhutten.homeremote.GETRequest;
-import nl.rickhutten.homeremote.OnTaskCompleted;
+import nl.rickhutten.homeremote.URL;
+import nl.rickhutten.homeremote.activity.AlbumOverviewActivity;
+import nl.rickhutten.homeremote.activity.ArtistOverviewActivity;
+import nl.rickhutten.homeremote.net.GETRequest;
+import nl.rickhutten.homeremote.net.OnTaskCompleted;
 import nl.rickhutten.homeremote.R;
 
 public class MusicControlView extends RelativeLayout {
+
     private ViewGroup rootView;
+    private Context context;
     private SharedPreferences sp;
     private boolean active;
     public int ID;
@@ -26,6 +34,11 @@ public class MusicControlView extends RelativeLayout {
 
     public MusicControlView(Context context) {
         super(context);
+        this.context = context;
+        setup();
+    }
+
+    private void setup() {
         ID = new Random().nextInt(1000);
         // Inflate layout from XML file
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -36,6 +49,10 @@ public class MusicControlView extends RelativeLayout {
         this.setTransitionName("musicControlView");
         sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
+        setClickListeners();
+    }
+
+    private void setClickListeners() {
         findViewById(R.id.playPause).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +75,7 @@ public class MusicControlView extends RelativeLayout {
                         // Dont update musicControlView, its updated from push notification
                     }
                 });
-                next.execute("http://rickert.noip.me/next");
+                next.execute(URL.getNextUrl(context));
             }
         });
 
@@ -73,16 +90,52 @@ public class MusicControlView extends RelativeLayout {
                         // Dont update musicControlView, its updated from push notification
                     }
                 });
-                next.execute("http://rickert.noip.me/previous");
+                next.execute(URL.getPreviousUrl(context));
             }
         });
 
-        // Don't let the container let touches get 'through'
-        findViewById(R.id.music_control_view_container).setOnTouchListener(new OnTouchListener() {
+        rootView.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // Do nothing, return true means consume the event
                 return true;
+            }
+        });
+
+        final View optionsButton = findViewById(R.id.optionsButton);
+        optionsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Creating the instance of PopupMenu
+                PopupMenu popup = new PopupMenu(context, optionsButton);
+                //Inflating the Popup using xml file
+                popup.getMenuInflater()
+                        .inflate(R.menu.menu_music_control_view, popup.getMenu());
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent;
+                        String artist = sp.getString("artist", null);
+                        String album = sp.getString("album", null);
+                        if (artist == null || album == null) {
+                            return true;
+                        }
+                        switch (item.getItemId()) {
+                            case R.id.to_artist:
+                                intent = new Intent(context, ArtistOverviewActivity.class);
+                                intent.putExtra("artist", artist);
+                                context.startActivity(intent);
+                                break;
+                            case R.id.to_album:
+                                intent = new Intent(context, AlbumOverviewActivity.class);
+                                intent.putExtra("artist", artist);
+                                intent.putExtra("album", album);
+                                context.startActivity(intent);
+                                break;
+                        }
+                        return true;
+                    }
+                });
+                popup.show(); //showing popup menu
             }
         });
     }
@@ -121,7 +174,7 @@ public class MusicControlView extends RelativeLayout {
                         .setImageResource(R.drawable.ic_play_circle_outline_black_48dp);
             }
         });
-        r.execute("http://rickert.noip.me/pause");
+        r.execute(URL.getPauseUrl(context));
     }
 
     private void resumeMusic() {
@@ -133,7 +186,7 @@ public class MusicControlView extends RelativeLayout {
                         .setImageResource(R.drawable.ic_pause_circle_outline_black_48dp);
             }
         });
-        r.execute("http://rickert.noip.me/resume");
+        r.execute(URL.getResumeUrl(context));
     }
 
     public boolean isViewActive() {

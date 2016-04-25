@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import nl.rickhutten.homeremote.R;
+import nl.rickhutten.homeremote.URL;
 
 
 public class AlbumListItemView extends RelativeLayout {
@@ -32,11 +33,8 @@ public class AlbumListItemView extends RelativeLayout {
         TextView textView = (TextView) rootView.findViewById(R.id.albumText);
         textView.setText(album);
 
-        final String artistFormat = artist.replace(" ", "_");
-        final String albumFormat = album.replace(" ", "_");
-
         // Download image and load into imageview
-        Picasso.with(context).load("http://rickert.noip.me/image/" + artistFormat + "/" + albumFormat)
+        Picasso.with(context).load(URL.getAlbumImageUrl(context, artist, album))
                 .config(Bitmap.Config.RGB_565).into(imageView);
     }
 

@@ -1,4 +1,4 @@
-package nl.rickhutten.homeremote.service;
+package nl.rickhutten.homeremote.gcm;
 
 import android.content.Intent;
 import android.content.SharedPreferences;

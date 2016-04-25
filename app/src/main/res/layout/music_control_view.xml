@@ -11,16 +11,18 @@
     <nl.rickhutten.homeremote.view.MusicProgressView
         android:thumb="@null"
         android:layout_marginTop="-10dp"
+        android:layout_marginLeft="-17dp"
+        android:layout_marginRight="-17dp"
         android:id="@+id/progressBar"
         android:max="10000"
         android:layout_width="match_parent"
         android:layout_height="20dp"
-        android:progress="1"
+        android:progress="0"
         android:secondaryProgress="10000"/>
 
     <ImageView
         android:id="@+id/playPause"
-
+        android:alpha="0.5"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_centerHorizontal="true"
@@ -29,6 +31,7 @@
 
     <ImageView
         android:id="@+id/next"
+        android:alpha="0.5"
         android:layout_width="38dp"
         android:layout_height="38dp"
         android:layout_toRightOf="@id/playPause"
@@ -38,6 +41,7 @@
 
     <ImageView
         android:id="@+id/prev"
+        android:alpha="0.5"
         android:layout_width="38dp"
         android:layout_height="38dp"
         android:layout_toLeftOf="@id/playPause"
@@ -53,8 +57,28 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="2dp"
-        android:textColor="@color/black"
+        android:textColor="@color/textColor"
         android:text="Not playing anything."
         android:lines="1"/>
+
+    <ImageView
+        android:id="@+id/queueButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:alpha="0.5"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="16dp"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_queue_music_black_48dp"/>
+
+    <ImageView
+        android:id="@+id/optionsButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:alpha="0.5"
+        android:layout_marginTop="14dp"
+        android:layout_marginStart="16dp"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/ic_more_vert_black_48dp"/>
 
 </RelativeLayout>

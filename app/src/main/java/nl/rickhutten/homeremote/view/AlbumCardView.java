@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import nl.rickhutten.homeremote.URL;
 import nl.rickhutten.homeremote.activity.AlbumOverviewActivity;
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.Utils;
@@ -42,20 +43,15 @@ public class AlbumCardView extends RelativeLayout {
         this.musicControlView = musicControlView;
     }
 
-    public void setAlbum(String albArt) {
-        String[] albumArtist = albArt.split(":");
-        final String album = albumArtist[0];
-        final String artist = albumArtist[1];
+    public void setAlbum(final String album, final String artist) {
 
         ((TextView) rootView.findViewById(R.id.albumText)).setText(album);
         ((TextView) rootView.findViewById(R.id.artistText)).setText(artist);
 
-        String artistFormat = artist.replace(" ", "_");
-        String albumFormat = album.replace(" ", "_");
         final ImageView albumImage = (ImageView) findViewById(R.id.albumImage);
 
         // Download image and load into imageview
-        Picasso.with(context).load("http://rickert.noip.me/image/" + artistFormat + "/" + albumFormat)
+        Picasso.with(context).load(URL.getAlbumImageUrl(context, artist, album))
                 .config(Bitmap.Config.RGB_565)
                 .resizeDimen(
                         R.dimen.album_card_view_image_width,
@@ -73,6 +69,7 @@ public class AlbumCardView extends RelativeLayout {
                         makeSceneTransitionAnimation(activity,
                                 Pair.create((View) musicControlView, "musicControlView"),
                                 Pair.create((View) albumImage, "albumImage"));
+
 
                 activity.startActivity(intent, options.toBundle());
             }
