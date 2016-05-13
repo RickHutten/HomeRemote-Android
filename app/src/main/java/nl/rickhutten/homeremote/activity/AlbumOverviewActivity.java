@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -122,8 +123,9 @@ public class AlbumOverviewActivity extends AppCompatActivity {
 
         for (int i = 0; i < songs.size(); i++) {
             String song = songs.get(i);
+            System.out.println(song);
             String[] albumArtist = song.split(":");
-            int length = Integer.parseInt(albumArtist[1]);
+            float length = Float.parseFloat(albumArtist[1]);
 
             SongView songView = new SongView(this, artistName, albumName);
             songView.set(playlist, i, length);
@@ -138,7 +140,7 @@ public class AlbumOverviewActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter("pushReceived"));
         musicControlView.setActive(true);
-        musicControlView.update();
+        musicControlView.updateHard();
     }
 
     @Override

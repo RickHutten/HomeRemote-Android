@@ -47,7 +47,7 @@ public class SongView extends RelativeLayout {
     }
 
     public void set(final ArrayList<ArrayList<String>> queue,
-                    int position, int length) {
+                    int position, float length) {
         // Queue => [ [artist, album, song], ... ]
         ArrayList<String> songList = queue.get(position);
         title = songList.get(2);
@@ -62,8 +62,8 @@ public class SongView extends RelativeLayout {
         }
 
         ((TextView)findViewById(R.id.songName)).setText(title);
-        int minutes = length / 60;
-        int seconds = length % 60;
+        int minutes = ((int)length) / 60;
+        int seconds = ((int)length) % 60;
         if (seconds < 10) {
             ((TextView) findViewById(R.id.length)).setText(minutes + ":0" + seconds);
         } else{
@@ -87,9 +87,7 @@ public class SongView extends RelativeLayout {
                     public void onTaskCompleted(String result) {
                         rootView.findViewById(R.id.playIcon).setVisibility(VISIBLE);
                         sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor e = sp.edit();
-                        e.putInt("playpause", R.drawable.ic_pause_circle_outline_black_48dp);
-                        e.commit();
+                        sp.edit().putBoolean("paused", false).commit();
                         // Dont update musicControlView, its updated from push notification
                         sp.registerOnSharedPreferenceChangeListener(listener);
                     }
@@ -102,7 +100,7 @@ public class SongView extends RelativeLayout {
                         Log.i("SongView", "POSTRequest result: " + result);
                     }
                 });
-                p.execute(URL.getQueueUrl(context));
+                p.execute(URL.getSetQueueUrl(context));
             }
         });
     }

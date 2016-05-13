@@ -3,6 +3,7 @@ package nl.rickhutten.homeremote.view;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -13,12 +14,18 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Random;
 
 import nl.rickhutten.homeremote.URL;
+import nl.rickhutten.homeremote.Utils;
 import nl.rickhutten.homeremote.activity.AlbumOverviewActivity;
 import nl.rickhutten.homeremote.activity.ArtistOverviewActivity;
+import nl.rickhutten.homeremote.net.GETJSONRequest;
 import nl.rickhutten.homeremote.net.GETRequest;
+import nl.rickhutten.homeremote.net.OnJSONDownloaded;
 import nl.rickhutten.homeremote.net.OnTaskCompleted;
 import nl.rickhutten.homeremote.R;
 
@@ -31,6 +38,7 @@ public class MusicControlView extends RelativeLayout {
     public int ID;
     private boolean newSongComming;
     private MusicProgressView progressView;
+    public boolean paused;
 
     public MusicControlView(Context context) {
         super(context);
@@ -48,7 +56,7 @@ public class MusicControlView extends RelativeLayout {
 
         this.setTransitionName("musicControlView");
         sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-
+        paused = sp.getBoolean("paused", true);
         setClickListeners();
     }
 
@@ -71,7 +79,8 @@ public class MusicControlView extends RelativeLayout {
                     @Override
                     public void onTaskCompleted(String result) {
                         // Put values in sharedpreferences
-                        sp.edit().putInt("playpause", R.drawable.ic_pause_circle_outline_black_48dp).apply();
+                        sp.edit().putBoolean("paused", false).apply();
+                        paused = false;
                         // Dont update musicControlView, its updated from push notification
                     }
                 });
@@ -86,7 +95,8 @@ public class MusicControlView extends RelativeLayout {
                     @Override
                     public void onTaskCompleted(String result) {
                         // Put values in sharedpreferences
-                        sp.edit().putInt("playpause", R.drawable.ic_pause_circle_outline_black_48dp).apply();
+                        sp.edit().putBoolean("paused", false).apply();
+                        paused = false;
                         // Dont update musicControlView, its updated from push notification
                     }
                 });
@@ -142,9 +152,11 @@ public class MusicControlView extends RelativeLayout {
 
     public void update() {
         // Set play pause button
-        int ResId = sp.getInt("playpause", 0);
-        if (ResId != 0) {
-            ((ImageView) findViewById(R.id.playPause)).setImageResource(ResId);
+        paused = sp.getBoolean("paused", true);
+        if (paused) {
+            ((ImageView)findViewById(R.id.playPause)).setImageResource(R.drawable.ic_play_circle_outline_black_48dp);
+        } else {
+            ((ImageView)findViewById(R.id.playPause)).setImageResource(R.drawable.ic_pause_circle_outline_black_48dp);
         }
 
         // Set text
@@ -161,6 +173,55 @@ public class MusicControlView extends RelativeLayout {
         progressView.startCountdown(sp);
     }
 
+    public void updateHard() {
+        new GETJSONRequest(new OnJSONDownloaded() {
+            @Override
+            public void onJSONCompleted(JSONObject jObject) {
+                Log.i("MusicControlView JSON", jObject.toString());
+                try {
+                    String status = jObject.getString("status");
+                    if (status.equalsIgnoreCase("STOPPED")) {
+                        progressView = (MusicProgressView) findViewById(R.id.progressBar);
+                        progressView.setProgress(0);
+                        int volume = jObject.getInt("volume");
+                        SharedPreferences.Editor e = sp.edit();
+                        e.putString("artist", null);
+                        e.putString("album", null);
+                        e.putInt("volume", volume);
+                        e.apply();
+                        ((TextView) findViewById(R.id.playingText)).setText(" ");
+                        return;
+                    }
+
+                    SharedPreferences.Editor e = sp.edit();
+                    JSONObject playing = jObject.getJSONObject("playing");
+                    float duration = (float) playing.getDouble("duration");
+                    float elapsed = (float) playing.getDouble("elapsed");
+                    int volume = jObject.getInt("volume");
+
+                    if (status.equalsIgnoreCase("PAUSED")) {
+                        paused = true;
+                        e.putBoolean("paused", true);
+                    } else if (status.equalsIgnoreCase("PLAYING")) {
+                        paused = false;
+                        e.putBoolean("paused", false);
+                    } else {
+                        Log.w("MusicControlView", "Status is wrong: " + status);
+                        return;
+                    }
+                    e.putFloat("duration", duration);
+                    e.putFloat("progress", elapsed);
+                    e.putInt("volume", volume);
+                    e.apply();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                update();
+            }
+        }).execute(URL.getStatusUrl(context));
+    }
+
+
     public boolean isPlaying() {
         return !sp.getBoolean("paused", true);
     }
@@ -170,6 +231,7 @@ public class MusicControlView extends RelativeLayout {
             @Override
             public void onTaskCompleted(String result) {
                 sp.edit().putBoolean("paused", true).apply();
+                paused = true;
                 ((ImageView)findViewById(R.id.playPause))
                         .setImageResource(R.drawable.ic_play_circle_outline_black_48dp);
             }
@@ -182,6 +244,7 @@ public class MusicControlView extends RelativeLayout {
             @Override
             public void onTaskCompleted(String result) {
                 sp.edit().putBoolean("paused", false).apply();
+                paused = false;
                 ((ImageView)findViewById(R.id.playPause))
                         .setImageResource(R.drawable.ic_pause_circle_outline_black_48dp);
             }
@@ -206,7 +269,6 @@ public class MusicControlView extends RelativeLayout {
             sp.edit().putFloat("progress", 0f).commit();
         }
         this.newSongComming = newSongComming;
-
     }
 
     public boolean isNewSongComming() {

@@ -2,12 +2,12 @@
 <resources>
     <color name="transparentBlack">#00000000</color>
     <color name="transparentWhite">#00ffffff</color>
-    <!--<color name="primaryDark">#C45900</color>-->
-    <!--<color name="accent">#EF6C00</color>-->
-    <!--<color name="primary">#EF6C00</color>-->
-    <color name="primaryDark">#00796B</color>
-    <color name="accent">#009688</color>
-    <color name="primary">#009688</color>
+    <color name="primaryDark">#C45900</color>
+    <color name="accent">#EF6C00</color>
+    <color name="primary">#EF6C00</color>
+    <!--<color name="primaryDark">#00796B</color>-->
+    <!--<color name="accent">#009688</color>-->
+    <!--<color name="primary">#009688</color>-->
     <color name="indigo">#4B0082</color>
     <color name="white">#fff</color>
     <color name="light_grey">#EEEEEE</color>
@@ -17,6 +17,6 @@
     <color name="black_trans">#4000</color>
     <color name="white_trans">#dfff</color>
     <color name="popup_backgroud">#8000</color>
-    <color name="ripple">#999999</color>
+    <color name="ripple">#dddddd</color>
     <color name="textColor">#757575</color>
 </resources>

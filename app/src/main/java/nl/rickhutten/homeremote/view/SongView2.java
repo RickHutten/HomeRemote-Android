@@ -24,7 +24,7 @@ public class SongView2 extends RelativeLayout {
     private String album;
     private String title;
     private ArrayList<ArrayList<String>> queue;
-    private int duration;
+    private float duration;
     private SharedPreferences sp;
     private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
@@ -48,7 +48,7 @@ public class SongView2 extends RelativeLayout {
     }
 
     public SongView2(Context context, String artist, ArrayList<ArrayList<String>> queue,
-                     int positionInQueue, int duration) {
+                     int positionInQueue, float duration) {
 
         super(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -76,8 +76,8 @@ public class SongView2 extends RelativeLayout {
     public void createView() {
         // Queue => [ [artist, album, song], ... ]
         ((TextView)findViewById(R.id.songName)).setText(title);
-        int minutes = duration / 60;
-        int seconds = duration % 60;
+        int minutes = ((int)duration) / 60;
+        int seconds = ((int)duration) % 60;
         if (seconds < 10) {
             ((TextView) findViewById(R.id.length)).setText(minutes + ":0" + seconds);
         } else{
@@ -101,9 +101,7 @@ public class SongView2 extends RelativeLayout {
                     public void onTaskCompleted(String result) {
                         rootView.findViewById(R.id.playIcon).setVisibility(VISIBLE);
                         sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor e = sp.edit();
-                        e.putInt("playpause", R.drawable.ic_pause_circle_outline_black_48dp);
-                        e.commit();
+                        sp.edit().putBoolean("paused", false).commit();
                         sp.registerOnSharedPreferenceChangeListener(listener);
                         // Dont update musicControlView, its updated from push notification
                     }
@@ -116,7 +114,7 @@ public class SongView2 extends RelativeLayout {
                         Log.i("SongView", "POSTRequest result: " + result);
                     }
                 });
-                p.execute(URL.getQueueUrl(context));
+                p.execute(URL.getSetQueueUrl(context));
             }
         });
     }

@@ -48,7 +48,7 @@ public class URL {
         return getUrl(context, "/set/volume/" + volume);
     }
 
-    static public String getQueueUrl(Context context) {
+    static public String getSetQueueUrl(Context context) {
         return getUrl(context, "/set/queue");
     }
 
@@ -70,5 +70,9 @@ public class URL {
 
     static public String getShutdownUrl(Context context) {
         return getUrl(context, "/shutdown");
+    }
+
+    static public String getStatusUrl(Context context) {
+        return getUrl(context, "status");
     }
 }

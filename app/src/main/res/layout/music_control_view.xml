@@ -58,7 +58,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="2dp"
         android:textColor="@color/textColor"
-        android:text="Not playing anything."
+        android:text=" "
         android:lines="1"/>
 
     <ImageView

@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter("pushReceived"));
         musicControlView.setActive(true);
-        musicControlView.update();
+        musicControlView.updateHard();
     }
 
     @Override

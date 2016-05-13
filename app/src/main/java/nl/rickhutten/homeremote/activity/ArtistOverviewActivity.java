@@ -167,7 +167,7 @@ public class ArtistOverviewActivity extends AppCompatActivity {
             for (int i = 0; i < songs.length(); i++) {
                 // Make song object
                 JSONObject song = songs.getJSONObject(i);
-                int duration = Integer.parseInt(song.getString("duration"));
+                float duration = Float.parseFloat(song.getString("duration"));
                 SongView2 songView = new SongView2(this, artistName, queue, songOffset + i, duration);
 
                 // Add song to cardview
@@ -185,7 +185,7 @@ public class ArtistOverviewActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter("pushReceived"));
         musicControlView.setActive(true);
-        musicControlView.update();
+        musicControlView.updateHard();
     }
 
     @Override

@@ -22,7 +22,7 @@ public class MyGcmListenerService extends GcmListenerService {
         String artist = data.getString("artist");
         String album = data.getString("album");
         String song = data.getString("song");
-        int duration = Integer.parseInt(data.getString("duration"));
+        float duration = Float.parseFloat(data.getString("duration"));
 
         Log.v("GcmListenerService", "Artist: " + artist + " Album: " + album + " Song: " + song);
 
@@ -31,7 +31,7 @@ public class MyGcmListenerService extends GcmListenerService {
         editor.putString("artist", artist);
         editor.putString("album", album);
         editor.putString("song", song);
-        editor.putInt("duration", duration);
+        editor.putFloat("duration", duration);
         editor.apply();
 
         // Notify UI that registration has completed, so the progress indicator can be hidden.
