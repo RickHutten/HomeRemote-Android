@@ -36,8 +36,8 @@ public class URL {
         return getUrl(context, "/image/" + urlSafe(artist) + "/" + urlSafe(album));
     }
 
-    static public String getPlaySongUrl(Context context, String artist, String album, String song) {
-        return getUrl(context, "/play/" + urlSafe(artist) + "/" + urlSafe(album) + "/" + urlSafe(song));
+    static public String getPlaySongUrl(Context context) {
+        return getUrl(context, "/play");
     }
 
     static public String getRegisterUrl(Context context) {

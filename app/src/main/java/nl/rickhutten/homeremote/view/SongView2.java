@@ -8,7 +8,11 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import nl.rickhutten.homeremote.net.GETRequest;
 import nl.rickhutten.homeremote.net.OnTaskCompleted;
@@ -18,6 +22,7 @@ import nl.rickhutten.homeremote.URL;
 
 public class SongView2 extends RelativeLayout {
 
+    private static final String TAG = "SongView2";
     private View rootView;
     private Context context;
     private String artist;
@@ -96,17 +101,37 @@ public class SongView2 extends RelativeLayout {
         findViewById(R.id.container).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                GETRequest r = new GETRequest(new OnTaskCompleted() {
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("artist", artist);
+                    json.put("album", album);
+                    json.put("song", title);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                POSTRequest r = new POSTRequest(json.toString(), new OnTaskCompleted() {
                     @Override
                     public void onTaskCompleted(String result) {
                         rootView.findViewById(R.id.playIcon).setVisibility(VISIBLE);
                         sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
                         sp.edit().putBoolean("paused", false).commit();
-                        sp.registerOnSharedPreferenceChangeListener(listener);
                         // Dont update musicControlView, its updated from push notification
+                        sp.registerOnSharedPreferenceChangeListener(listener);
                     }
                 });
-                r.execute(URL.getPlaySongUrl(context, artist, album, title));
+                r.execute(URL.getPlaySongUrl(context));
+
+//                GETRequest r = new GETRequest(new OnTaskCompleted() {
+//                    @Override
+//                    public void onTaskCompleted(String result) {
+//                        rootView.findViewById(R.id.playIcon).setVisibility(VISIBLE);
+//                        sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+//                        sp.edit().putBoolean("paused", false).commit();
+//                        sp.registerOnSharedPreferenceChangeListener(listener);
+//                        // Dont update musicControlView, its updated from push notification
+//                    }
+//                });
+//                r.execute(URL.getPlaySongUrl(context, artist, album, title));
 
                 POSTRequest p = new POSTRequest(data, new OnTaskCompleted() {
                     @Override

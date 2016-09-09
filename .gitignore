@@ -7,9 +7,8 @@
 /captures
 .idea/
 Thumbs.db
-HomeRemote.iml
+*.iml
 gradlew.bat
 gradlew
 gradle/
-app.iml
 app/google-services.json
