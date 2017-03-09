@@ -24,11 +24,12 @@ public class POSTRequest extends AsyncTask<String, String, String> {
     @Override
     protected String doInBackground(String... uri) {
         String msg = "";
-        Log.v("POSTRequeset", "POST: " + data);
+
 
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(uri[0]);
+            Log.v("POSTRequeset", url.toString());
             urlConnection = (HttpURLConnection) url.openConnection();
 
             urlConnection.setDoInput(true);

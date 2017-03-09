@@ -24,7 +24,7 @@ public class MyGcmListenerService extends GcmListenerService {
         String song = data.getString("song");
         float duration = Float.parseFloat(data.getString("duration"));
 
-        Log.v("GcmListenerService", "Artist: " + artist + " Album: " + album + " Song: " + song);
+//        Log.v("GcmListenerService", "Artist: " + artist + " Album: " + album + " Song: " + song);
 
         SharedPreferences sp = getSharedPreferences("prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();

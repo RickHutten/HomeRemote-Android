@@ -177,7 +177,7 @@ public class MusicControlView extends RelativeLayout {
         new GETJSONRequest(new OnJSONDownloaded() {
             @Override
             public void onJSONCompleted(JSONObject jObject) {
-                Log.i("MusicControlView JSON", jObject.toString());
+//                Log.i("MusicControlView JSON", jObject.toString());
                 try {
                     String status = jObject.getString("status");
                     if (status.equalsIgnoreCase("STOPPED")) {

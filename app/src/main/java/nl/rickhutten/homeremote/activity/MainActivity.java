@@ -64,25 +64,24 @@ public class MainActivity extends AppCompatActivity {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i("MainActivity", "Push Received!");
+//                Log.i("MainActivity", "Push Received!");
                 musicControlView.setNewSongComming(true);
                 musicControlView.update();
             }
         };
 
         if (checkPlayServices()) {
-            Log.i("MainActivity", "Google Play Services available");
+//            Log.i("MainActivity", "Google Play Services available");
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
-            Log.i("MainActivity", "Intent was started");
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i("MainActivity", "onResume MusicControlView ID: " + musicControlView.ID);
+//        Log.i("MainActivity", "onResume MusicControlView ID: " + musicControlView.ID);
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter("pushReceived"));
         musicControlView.setActive(true);
@@ -92,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-        Log.i("MainActivity", "onPause MusicControlView ID: " + musicControlView.ID);
+//        Log.i("MainActivity", "onPause MusicControlView ID: " + musicControlView.ID);
         musicControlView.setActive(false);
         super.onPause();
     }

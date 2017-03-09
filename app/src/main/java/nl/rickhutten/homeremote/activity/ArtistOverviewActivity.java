@@ -127,7 +127,7 @@ public class ArtistOverviewActivity extends AppCompatActivity {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i("ArtistOverviewActivity", "Push Received!");
+//                Log.i("ArtistOverviewActivity", "Push Received!");
                 musicControlView.setNewSongComming(true);
                 musicControlView.update();
             }
@@ -181,7 +181,7 @@ public class ArtistOverviewActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i("ArtistOverviewActivity", "onResume MusicControlView ID: " + musicControlView.ID);
+//        Log.i("ArtistOverviewActivity", "onResume MusicControlView ID: " + musicControlView.ID);
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter("pushReceived"));
         musicControlView.setActive(true);
@@ -192,7 +192,7 @@ public class ArtistOverviewActivity extends AppCompatActivity {
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         musicControlView.setActive(false);
-        Log.i("ArtistOverviewActivity", "onPause MusicControlView ID: " + musicControlView.ID);
+//        Log.i("ArtistOverviewActivity", "onPause MusicControlView ID: " + musicControlView.ID);
         super.onPause();
     }
 

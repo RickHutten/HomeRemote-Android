@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -25,12 +24,15 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import nl.rickhutten.homeremote.URL;
-import nl.rickhutten.homeremote.net.GETRequest;
-import nl.rickhutten.homeremote.net.OnTaskCompleted;
+import nl.rickhutten.homeremote.net.GETJSONRequest;
+import nl.rickhutten.homeremote.net.OnJSONDownloaded;
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.Utils;
 import nl.rickhutten.homeremote.view.SongView;
@@ -39,8 +41,7 @@ import nl.rickhutten.homeremote.dialog.VolumeDialog;
 
 public class AlbumOverviewActivity extends AppCompatActivity {
 
-    private ArrayList<String> songs;
-    private String artistName;
+    private String albumArtist;
     private String albumName;
     public SharedPreferences sp;
     public MusicControlView musicControlView;
@@ -62,9 +63,9 @@ public class AlbumOverviewActivity extends AppCompatActivity {
         musicControlView = new MusicControlView(this);
         ((RelativeLayout) findViewById(R.id.activity_album_overview_container)).addView(musicControlView);
 
-        this.artistName = getIntent().getStringExtra("artist");
+        this.albumArtist = getIntent().getStringExtra("artist");
         this.albumName = getIntent().getStringExtra("album");
-        ((TextView)findViewById(R.id.artistText)).setText(artistName);
+        ((TextView)findViewById(R.id.artistText)).setText(albumArtist);
         ((TextView)findViewById(R.id.albumText)).setText(albumName);
 
         final ImageView topView = (ImageView) findViewById(R.id.topview);
@@ -78,7 +79,7 @@ public class AlbumOverviewActivity extends AppCompatActivity {
         });
 
         // Download image and load into imageview
-        Picasso.with(this).load(URL.getAlbumImageUrl(this, artistName, albumName))
+        Picasso.with(this).load(URL.getAlbumImageUrl(this, albumArtist, albumName))
                 .config(Bitmap.Config.RGB_565).into(topView);
 
         setAlbum();
@@ -86,7 +87,7 @@ public class AlbumOverviewActivity extends AppCompatActivity {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i("AlbumOverviewActivity", "Push Received!");
+//                Log.i("AlbumOverviewActivity", "Push Received!");
                 musicControlView.setNewSongComming(true);
                 musicControlView.update();
             }
@@ -95,40 +96,41 @@ public class AlbumOverviewActivity extends AppCompatActivity {
 
     public void setAlbum() {
         // Download the songs
-        GETRequest getSongs = new GETRequest(new OnTaskCompleted() {
+        GETJSONRequest getSongs = new GETJSONRequest(new OnJSONDownloaded() {
             @Override
-            public void onTaskCompleted(String result) {
-                songs = new ArrayList<>(Arrays.asList(result.split(";")));
-                addSongs();
+            public void onJSONCompleted(JSONObject jObject) {
+                try {
+                    addSongs(jObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
-        getSongs.execute("http://rickert.noip.me/get/" + artistName.replace(" ", "_") + "/" +
-                albumName.replace(" ", "_"));
+        getSongs.execute(URL.getAlbumUrl(this, albumArtist, albumName));
     }
 
-    private void addSongs() {
+    private void addSongs(JSONObject album) throws JSONException{
         // Create playlist
         ArrayList<ArrayList<String>> playlist = new ArrayList<>();
-        for (String song : songs) {
-            ArrayList<String> songList = new ArrayList<>();
-            songList.add(artistName);
-            songList.add(albumName);
-            songList.add(song.split(":")[0]);
+        LinearLayout songContainer = (LinearLayout) findViewById(R.id.songs);
 
+        JSONArray songs = (JSONArray)album.get("songs");
+
+        for (int i = 0; i < songs.length(); i++) {
+            JSONObject song = (JSONObject)songs.get(i);
+
+            ArrayList<String> songList = new ArrayList<>();
+            songList.add((String)song.get("artist"));
+            songList.add(albumName);
+            songList.add((String)song.get("title"));
             playlist.add(songList);
         }
 
-        // Add songs to linearlayout
-        LinearLayout songContainer = (LinearLayout) findViewById(R.id.songs);
-
-        for (int i = 0; i < songs.size(); i++) {
-            String song = songs.get(i);
-            System.out.println(song);
-            String[] albumArtist = song.split(":");
-            float length = Float.parseFloat(albumArtist[1]);
-
-            SongView songView = new SongView(this, artistName, albumName);
-            songView.set(playlist, i, length);
+        for (int i = 0; i < songs.length(); i++) {
+            JSONObject song = (JSONObject) songs.get(i);
+            // Add songs to linearlayout
+            SongView songView = new SongView(this, (String)song.get("artist"), albumName);
+            songView.set(playlist, i, (float) (double) song.get("duration"));
             songContainer.addView(songView);
         }
     }
@@ -136,7 +138,7 @@ public class AlbumOverviewActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i("AlbumOverviewActivity", "onResume MusicControlView ID: " + musicControlView.ID);
+//        Log.i("AlbumOverviewActivity", "onResume MusicControlView ID: " + musicControlView.ID);
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter("pushReceived"));
         musicControlView.setActive(true);
@@ -146,7 +148,7 @@ public class AlbumOverviewActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-        Log.i("AlbumOverviewActivity", "onPause MusicControlView ID: " + musicControlView.ID);
+//        Log.i("AlbumOverviewActivity", "onPause MusicControlView ID: " + musicControlView.ID);
         musicControlView.setActive(false);
         super.onPause();
     }
