@@ -3,13 +3,12 @@ package nl.rickhutten.homeremote.view;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.support.v7.widget.AppCompatSeekBar;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.SeekBar;
 
 
-public class MusicProgressView extends SeekBar {
+public class MusicProgressView extends AppCompatSeekBar {
 
     private MusicProgressView view = this;
     private MusicControlView musicControlView;
@@ -34,6 +33,10 @@ public class MusicProgressView extends SeekBar {
         return false;
     }
 
+    /**
+     * Creates thread that sets the ProgressView to the current progress of the playing song
+     * @param sp the SharedPreferences that has the values 'duration' and 'progress'
+     */
     public void startCountdown(final SharedPreferences sp) {
         duration = sp.getFloat("duration", 180);
         seconds = sp.getFloat("progress", 0f);
@@ -44,7 +47,7 @@ public class MusicProgressView extends SeekBar {
                 if (!musicControlView.paused) {
                     seconds += 0.5;
                 }
-                musicControlView.setNewSongComming(false);
+                musicControlView.setNewSongComing(false);
 //                Log.i("MusicProgressView ID: " + ID, "Start counting; duration, offset: " + duration + ", " + seconds);
                 try {
                     while (seconds <= duration) {
@@ -52,8 +55,8 @@ public class MusicProgressView extends SeekBar {
 //                            Log.i("MusicProgressView ID: " + ID, "Not active, stop counting");
                             break;
                         }
-                        if (musicControlView.isNewSongComming()) {
-                            musicControlView.setNewSongComming(false);
+                        if (musicControlView.isNewSongComing()) {
+                            musicControlView.setNewSongComing(false);
 //                            Log.i("MusicProgressView ID: " + ID, "New song comming, stop counting");
                             break;
                         }

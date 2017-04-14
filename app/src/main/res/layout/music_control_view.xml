@@ -58,7 +58,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="2dp"
         android:textColor="@color/textColor"
-        android:text=" "
+        android:text="Title - Album"
         android:lines="1"/>
 
     <ImageView

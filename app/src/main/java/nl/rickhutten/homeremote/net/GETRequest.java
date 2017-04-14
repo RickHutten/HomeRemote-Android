@@ -1,6 +1,7 @@
 package nl.rickhutten.homeremote.net;
 
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -14,7 +15,11 @@ public class GETRequest extends AsyncTask<String, String, String> {
 
     private OnTaskCompleted listener;
 
-    public GETRequest(OnTaskCompleted listener){
+    public GETRequest() {
+        this(null);
+    }
+
+    public GETRequest(@Nullable OnTaskCompleted listener){
         this.listener = listener;
     }
 

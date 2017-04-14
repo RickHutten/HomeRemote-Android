@@ -52,6 +52,10 @@ public class URL {
         return getUrl(context, "/set/queue");
     }
 
+    static public String getQueueUrl(Context context) {
+        return getUrl(context, "/queue");
+    }
+
     static public String getPauseUrl(Context context) {
         return getUrl(context, "/pause");
     }
@@ -68,11 +72,11 @@ public class URL {
         return getUrl(context, "/previous");
     }
 
-    static public String getShutdownUrl(Context context) {
+    static String getShutdownUrl(Context context) {
         return getUrl(context, "/shutdown");
     }
 
     static public String getStatusUrl(Context context) {
-        return getUrl(context, "status");
+        return getUrl(context, "/status");
     }
 }

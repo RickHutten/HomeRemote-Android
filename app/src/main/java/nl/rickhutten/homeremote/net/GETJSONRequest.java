@@ -1,6 +1,7 @@
 package nl.rickhutten.homeremote.net;
 
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -16,7 +17,11 @@ public class GETJSONRequest extends AsyncTask<String, String, String> {
 
     private OnJSONDownloaded listener;
 
-    public GETJSONRequest(OnJSONDownloaded listener){
+    public GETJSONRequest() {
+        this(null);
+    }
+
+    public GETJSONRequest(@Nullable OnJSONDownloaded listener) {
         this.listener = listener;
     }
 
@@ -57,7 +62,9 @@ public class GETJSONRequest extends AsyncTask<String, String, String> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        listener.onJSONCompleted(jObject);
+        if (listener != null) {
+            listener.onJSONCompleted(jObject);
+        }
     }
 
 }

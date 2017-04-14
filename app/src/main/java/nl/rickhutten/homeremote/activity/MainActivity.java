@@ -11,8 +11,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,7 +30,7 @@ import nl.rickhutten.homeremote.fragment.ArtistFragment;
 import nl.rickhutten.homeremote.view.MusicControlView;
 import nl.rickhutten.homeremote.dialog.VolumeDialog;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends MusicActivity {
 
     public MusicControlView musicControlView;
     private BroadcastReceiver broadcastReceiver;
@@ -40,15 +38,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setElevation(0f);  // Has to be called before setContentView()
         setContentView(R.layout.activity_main);
 
         // Add view to main activity
         musicControlView = new MusicControlView(this);
         ((RelativeLayout) findViewById(R.id.activity_main_container)).addView(musicControlView);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
-        setSupportActionBar(toolbar);
 
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
@@ -60,22 +55,22 @@ public class MainActivity extends AppCompatActivity {
         mTabs.setSelectedIndicatorColors(colors);
         mTabs.setBackgroundResource(R.color.primary);
         mTabs.setViewPager(mPager);
-
+        findViewById(R.id.tabs).setPadding(0, 112, 0, 0);
+//
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-//                Log.i("MainActivity", "Push Received!");
-                musicControlView.setNewSongComming(true);
+                musicControlView.setNewSongComing(true);
                 musicControlView.update();
             }
         };
 
         if (checkPlayServices()) {
-//            Log.i("MainActivity", "Google Play Services available");
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         }
+
     }
 
     @Override

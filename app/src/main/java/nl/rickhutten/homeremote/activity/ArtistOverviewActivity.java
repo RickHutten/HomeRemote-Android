@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,10 +35,10 @@ import nl.rickhutten.homeremote.Utils;
 import nl.rickhutten.homeremote.view.AlbumCardView;
 import nl.rickhutten.homeremote.view.AlbumExpandedCardView;
 import nl.rickhutten.homeremote.view.MusicControlView;
-import nl.rickhutten.homeremote.view.SongView2;
+import nl.rickhutten.homeremote.view.SongView;
 import nl.rickhutten.homeremote.dialog.VolumeDialog;
 
-public class ArtistOverviewActivity extends AppCompatActivity {
+public class ArtistOverviewActivity extends MusicActivity {
 
     private String artistName;
     public MusicControlView musicControlView;
@@ -117,6 +115,7 @@ public class ArtistOverviewActivity extends AppCompatActivity {
 
                         offset += album.getJSONArray("songs").length();
                     }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -128,7 +127,7 @@ public class ArtistOverviewActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
 //                Log.i("ArtistOverviewActivity", "Push Received!");
-                musicControlView.setNewSongComming(true);
+                musicControlView.setNewSongComing(true);
                 musicControlView.update();
             }
         };
@@ -168,7 +167,7 @@ public class ArtistOverviewActivity extends AppCompatActivity {
                 // Make song object
                 JSONObject song = songs.getJSONObject(i);
                 float duration = Float.parseFloat(song.getString("duration"));
-                SongView2 songView = new SongView2(this, artistName, queue, songOffset + i, duration);
+                SongView songView = new SongView(this, queue, songOffset + i, duration);
 
                 // Add song to cardview
                 cardView.addSong(songView);

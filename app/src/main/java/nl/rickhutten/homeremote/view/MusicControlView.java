@@ -14,15 +14,17 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import nl.rickhutten.homeremote.URL;
-import nl.rickhutten.homeremote.Utils;
 import nl.rickhutten.homeremote.activity.AlbumOverviewActivity;
 import nl.rickhutten.homeremote.activity.ArtistOverviewActivity;
+import nl.rickhutten.homeremote.activity.MusicActivity;
 import nl.rickhutten.homeremote.net.GETJSONRequest;
 import nl.rickhutten.homeremote.net.GETRequest;
 import nl.rickhutten.homeremote.net.OnJSONDownloaded;
@@ -32,15 +34,15 @@ import nl.rickhutten.homeremote.R;
 public class MusicControlView extends RelativeLayout {
 
     private ViewGroup rootView;
-    private Context context;
+    private MusicActivity context;
     private SharedPreferences sp;
     private boolean active;
     public int ID;
-    private boolean newSongComming;
+    private boolean newSongComing;
     private MusicProgressView progressView;
     public boolean paused;
 
-    public MusicControlView(Context context) {
+    public MusicControlView(final MusicActivity context) {
         super(context);
         this.context = context;
         setup();
@@ -148,8 +150,18 @@ public class MusicControlView extends RelativeLayout {
                 popup.show(); //showing popup menu
             }
         });
+
+        findViewById(R.id.queueButton).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("MusicControlView", "Queue: " + context.getQueue().toString());
+            }
+        });
     }
 
+    /**
+     * Set the information saved in the shared preferences
+     */
     public void update() {
         // Set play pause button
         paused = sp.getBoolean("paused", true);
@@ -173,11 +185,13 @@ public class MusicControlView extends RelativeLayout {
         progressView.startCountdown(sp);
     }
 
+    /**
+     * Get information from server and update view
+     */
     public void updateHard() {
         new GETJSONRequest(new OnJSONDownloaded() {
             @Override
             public void onJSONCompleted(JSONObject jObject) {
-//                Log.i("MusicControlView JSON", jObject.toString());
                 try {
                     String status = jObject.getString("status");
                     if (status.equalsIgnoreCase("STOPPED")) {
@@ -187,6 +201,9 @@ public class MusicControlView extends RelativeLayout {
                         SharedPreferences.Editor e = sp.edit();
                         e.putString("artist", null);
                         e.putString("album", null);
+                        e.putString("song", null);
+                        e.putFloat("duration", 0);
+                        e.putFloat("progress", 0);
                         e.putInt("volume", volume);
                         e.apply();
                         ((TextView) findViewById(R.id.playingText)).setText(" ");
@@ -195,8 +212,6 @@ public class MusicControlView extends RelativeLayout {
 
                     SharedPreferences.Editor e = sp.edit();
                     JSONObject playing = jObject.getJSONObject("playing");
-                    float duration = (float) playing.getDouble("duration");
-                    float elapsed = (float) playing.getDouble("elapsed");
                     int volume = jObject.getInt("volume");
 
                     if (status.equalsIgnoreCase("PAUSED")) {
@@ -209,8 +224,11 @@ public class MusicControlView extends RelativeLayout {
                         Log.w("MusicControlView", "Status is wrong: " + status);
                         return;
                     }
-                    e.putFloat("duration", duration);
-                    e.putFloat("progress", elapsed);
+                    e.putString("artist", playing.getString("artist"));
+                    e.putString("album", playing.getString("album"));
+                    e.putString("song", playing.getString("song"));
+                    e.putFloat("duration", (float) playing.getDouble("duration"));
+                    e.putFloat("progress", (float) playing.getDouble("elapsed"));
                     e.putInt("volume", volume);
                     e.apply();
                 } catch (JSONException e) {
@@ -219,6 +237,35 @@ public class MusicControlView extends RelativeLayout {
                 update();
             }
         }).execute(URL.getStatusUrl(context));
+
+        new GETJSONRequest(new OnJSONDownloaded() {
+            @Override
+            public void onJSONCompleted(JSONObject jObject) {
+                ArrayList<ArrayList<String>> queue = new ArrayList<>();
+                ArrayList<String> song = new ArrayList<>();
+
+                // Queue => [ [artist, album, song], ... ]
+                try {
+                    JSONArray songs = jObject.getJSONArray("queue");
+                    for (int i = 0; i < songs.length(); i++) {
+                        song.clear();
+                        song.add(songs.getJSONObject(i).getString("artist"));
+                        song.add(songs.getJSONObject(i).getString("album"));
+                        song.add(songs.getJSONObject(i).getString("song"));
+                        queue.add(song);
+                    }
+                    saveQueueInActivity(queue);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }).execute(URL.getQueueUrl(context));
+    }
+
+    private void saveQueueInActivity(ArrayList<ArrayList<String>> queue) {
+        context.setQueue(queue);
     }
 
 
@@ -264,14 +311,14 @@ public class MusicControlView extends RelativeLayout {
         }
     }
 
-    public void setNewSongComming(boolean newSongComming) {
-        if (newSongComming) {
+    public void setNewSongComing(boolean newSongComing) {
+        if (newSongComing) {
             sp.edit().putFloat("progress", 0f).commit();
         }
-        this.newSongComming = newSongComming;
+        this.newSongComing = newSongComing;
     }
 
-    public boolean isNewSongComming() {
-        return this.newSongComming;
+    public boolean isNewSongComing() {
+        return this.newSongComing;
     }
 }

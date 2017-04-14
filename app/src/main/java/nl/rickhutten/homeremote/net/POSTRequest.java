@@ -1,6 +1,7 @@
 package nl.rickhutten.homeremote.net;
 
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;
@@ -16,7 +17,11 @@ public class POSTRequest extends AsyncTask<String, String, String> {
     private String data;
     private OnTaskCompleted listener;
 
-    public POSTRequest(String data, OnTaskCompleted listener) {
+    public POSTRequest(String data) {
+        this(data, null);
+    }
+
+    public POSTRequest(String data, @Nullable OnTaskCompleted listener) {
         this.data = data;
         this.listener = listener;
     }
@@ -65,6 +70,8 @@ public class POSTRequest extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        listener.onTaskCompleted(result);
+        if (listener != null) {
+            listener.onTaskCompleted(result);
+        }
     }
 }

@@ -41,7 +41,6 @@ public class RegistrationIntentService extends IntentService {
             // [END get_token]
             Log.i("RegIntentService", "GCM Registration Token: " + token);
 
-            // TODO: Implement this method to send any registration to your app's servers.
             sendRegistrationToServer(token);
 
             // Subscribe to topic channels
@@ -70,10 +69,7 @@ public class RegistrationIntentService extends IntentService {
      */
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
-        POSTRequest postToken = new POSTRequest(token, new OnTaskCompleted() {
-            @Override
-            public void onTaskCompleted(String result) { }
-        });
+        POSTRequest postToken = new POSTRequest(token);
         postToken.execute("http://rickert.noip.me/register_token");
     }
 
@@ -83,13 +79,11 @@ public class RegistrationIntentService extends IntentService {
      * @param token GCM token
      * @throws IOException if unable to reach the GCM PubSub service
      */
-    // [START subscribe_topics]
     private void subscribeTopics(String token) throws IOException {
         GcmPubSub pubSub = GcmPubSub.getInstance(this);
         for (String topic : TOPICS) {
             pubSub.subscribe(token, "/topics/" + topic, null);
         }
     }
-    // [END subscribe_topics]
 
 }

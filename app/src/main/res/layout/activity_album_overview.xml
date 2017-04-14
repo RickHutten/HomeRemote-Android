@@ -90,7 +90,7 @@
                     android:text="Album" />
 
                 <LinearLayout
-                    android:id="@+id/songs"
+                    android:id="@+id/song_container"
                     android:layout_below="@id/albumText"
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="12dp"
@@ -102,7 +102,7 @@
                     android:showDividers="middle"/>
 
                 <RelativeLayout
-                    android:layout_below="@id/songs"
+                    android:layout_below="@id/song_container"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/play_bar_height" />
 

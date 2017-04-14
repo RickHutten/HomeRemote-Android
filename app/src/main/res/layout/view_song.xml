@@ -23,7 +23,7 @@
         android:alpha="0.5"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/length"
-        android:src="@drawable/ic_play_light"/>
+        android:src="@drawable/ic_play_circle_outline_black_48dp"/>
 
     <TextView
         android:id="@+id/songName"

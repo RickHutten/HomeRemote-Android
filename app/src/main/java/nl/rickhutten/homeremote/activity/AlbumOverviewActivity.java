@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,11 +33,11 @@ import nl.rickhutten.homeremote.net.GETJSONRequest;
 import nl.rickhutten.homeremote.net.OnJSONDownloaded;
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.Utils;
-import nl.rickhutten.homeremote.view.SongView;
 import nl.rickhutten.homeremote.view.MusicControlView;
 import nl.rickhutten.homeremote.dialog.VolumeDialog;
+import nl.rickhutten.homeremote.view.SongView;
 
-public class AlbumOverviewActivity extends AppCompatActivity {
+public class AlbumOverviewActivity extends MusicActivity {
 
     private String albumArtist;
     private String albumName;
@@ -88,7 +86,7 @@ public class AlbumOverviewActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
 //                Log.i("AlbumOverviewActivity", "Push Received!");
-                musicControlView.setNewSongComming(true);
+                musicControlView.setNewSongComing(true);
                 musicControlView.update();
             }
         };
@@ -112,25 +110,24 @@ public class AlbumOverviewActivity extends AppCompatActivity {
     private void addSongs(JSONObject album) throws JSONException{
         // Create playlist
         ArrayList<ArrayList<String>> playlist = new ArrayList<>();
-        LinearLayout songContainer = (LinearLayout) findViewById(R.id.songs);
+        LinearLayout songContainer = (LinearLayout) findViewById(R.id.song_container);
 
-        JSONArray songs = (JSONArray)album.get("songs");
+        JSONArray songs = album.getJSONArray("songs");
 
         for (int i = 0; i < songs.length(); i++) {
             JSONObject song = (JSONObject)songs.get(i);
 
             ArrayList<String> songList = new ArrayList<>();
-            songList.add((String)song.get("artist"));
+            songList.add(song.getString("artist"));
             songList.add(albumName);
-            songList.add((String)song.get("title"));
+            songList.add(song.getString("title"));
             playlist.add(songList);
         }
 
         for (int i = 0; i < songs.length(); i++) {
             JSONObject song = (JSONObject) songs.get(i);
             // Add songs to linearlayout
-            SongView songView = new SongView(this, (String)song.get("artist"), albumName);
-            songView.set(playlist, i, (float) (double) song.get("duration"));
+            SongView songView = new SongView(this, playlist, i, (float) song.getDouble("duration"));
             songContainer.addView(songView);
         }
     }

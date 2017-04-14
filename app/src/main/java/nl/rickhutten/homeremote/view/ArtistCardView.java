@@ -66,7 +66,6 @@ public class ArtistCardView extends RelativeLayout {
         artistTextView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.v("ArtistCardView", "Clicked on " + artist);
                 Intent intent = new Intent(context, ArtistOverviewActivity.class);
                 intent.putExtra("artist", artist);
 

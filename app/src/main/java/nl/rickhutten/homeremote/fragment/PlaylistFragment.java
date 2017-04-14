@@ -17,7 +17,7 @@ public class PlaylistFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        this.layout = (ViewGroup) inflater.inflate(R.layout.album_fragment, container, false);
+        this.layout = (ViewGroup) inflater.inflate(R.layout.fragment_album, container, false);
         mainActivity = (MainActivity) inflater.getContext();
 
         //TODO: Get all playlists

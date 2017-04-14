@@ -66,7 +66,7 @@ public class AlbumExpandedCardView extends RelativeLayout {
         });
     }
 
-    public void addSong(SongView2 song) {
+    public void addSong(SongView song) {
         card.addView(song);
     }
 }
