@@ -1,14 +1,19 @@
 package nl.rickhutten.homeremote.view;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Path;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.PathInterpolator;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
@@ -22,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import nl.rickhutten.homeremote.URL;
+import nl.rickhutten.homeremote.Utils;
 import nl.rickhutten.homeremote.activity.AlbumOverviewActivity;
 import nl.rickhutten.homeremote.activity.ArtistOverviewActivity;
 import nl.rickhutten.homeremote.activity.MusicActivity;
@@ -41,6 +47,8 @@ public class MusicControlView extends RelativeLayout {
     private boolean newSongComing;
     private MusicProgressView progressView;
     public boolean paused;
+    private QueueView queueView;
+    private View container;
 
     public MusicControlView(final MusicActivity context) {
         super(context);
@@ -53,6 +61,8 @@ public class MusicControlView extends RelativeLayout {
         // Inflate layout from XML file
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         rootView = (ViewGroup) inflater.inflate(R.layout.music_control_view, this, false);
+        queueView = (QueueView) rootView.findViewById(R.id.queueView);
+        container = rootView.findViewById(R.id.music_control_view_container);
         addView(rootView);
         this.setClipChildren(false);
 
@@ -152,9 +162,75 @@ public class MusicControlView extends RelativeLayout {
         });
 
         findViewById(R.id.queueButton).setOnClickListener(new OnClickListener() {
+            private int originalHeight = (int)context.getResources().getDimension(R.dimen.play_bar_height);
+            private LayoutParams lp = (LayoutParams) container.getLayoutParams();
+            private boolean actionBarWasShown = true;
+            private ActionBar actionBar = context.getSupportActionBar();
+
             @Override
             public void onClick(View v) {
-                Log.i("MusicControlView", "Queue: " + context.getQueue().toString());
+                // Toggle visibility
+                if (queueView.getVisibility() == VISIBLE) {
+                    // QueueView going down
+                    ValueAnimator anim = ValueAnimator.ofInt(Utils.getScreenHeight(context), originalHeight);
+                    anim.setDuration(300);
+                    anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            lp.height = (int)animation.getAnimatedValue();
+                            container.setLayoutParams(lp);
+                            if (actionBarWasShown) {
+                                actionBar.setHideOffset(actionBar.getHeight() - container.getTop());
+                            }
+                        }
+                    });
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            queueView.setVisibility(INVISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    });
+                    Path path = new Path();
+                    path.cubicTo(0.75f, 0.25f, 0.95f, 0.75f, 1f, 1f);  // Bezier curve
+                    anim.setInterpolator(new PathInterpolator(path));
+                    anim.start();
+                } else {
+                    // QueueView going up
+                    queueView.setVisibility(VISIBLE);
+                    actionBarWasShown = actionBar.getHideOffset() < 0.5*actionBar.getHeight();
+                    ValueAnimator anim = ValueAnimator.ofInt(originalHeight, Utils.getScreenHeight(context));
+                    anim.setDuration(500);
+                    anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            lp.height = (int)animation.getAnimatedValue();
+                            container.setLayoutParams(lp);
+                            if (actionBarWasShown) {
+                                actionBar.setHideOffset(actionBar.getHeight() - container.getTop());
+                            }
+                        }
+                    });
+                    Path path = new Path();
+                    path.cubicTo(0.1f, 1f, 0.5f, 1f, 1f, 1f);  // Bezier curve
+                    anim.setInterpolator(new PathInterpolator(path));
+                    anim.start();
+                }
+
             }
         });
     }
@@ -189,6 +265,12 @@ public class MusicControlView extends RelativeLayout {
      * Get information from server and update view
      */
     public void updateHard() {
+        // Get status and queue from server
+        getStatus();
+        updateQueue();
+    }
+
+    private void getStatus() {
         new GETJSONRequest(new OnJSONDownloaded() {
             @Override
             public void onJSONCompleted(JSONObject jObject) {
@@ -237,24 +319,30 @@ public class MusicControlView extends RelativeLayout {
                 update();
             }
         }).execute(URL.getStatusUrl(context));
+    }
 
+    /**
+     * Downloads new queue from server and updates the queueView
+     */
+    private void updateQueue() {
         new GETJSONRequest(new OnJSONDownloaded() {
             @Override
             public void onJSONCompleted(JSONObject jObject) {
                 ArrayList<ArrayList<String>> queue = new ArrayList<>();
-                ArrayList<String> song = new ArrayList<>();
+                ArrayList<String> song;
 
                 // Queue => [ [artist, album, song], ... ]
                 try {
                     JSONArray songs = jObject.getJSONArray("queue");
                     for (int i = 0; i < songs.length(); i++) {
-                        song.clear();
+                        song = new ArrayList<>();
                         song.add(songs.getJSONObject(i).getString("artist"));
                         song.add(songs.getJSONObject(i).getString("album"));
                         song.add(songs.getJSONObject(i).getString("song"));
                         queue.add(song);
                     }
                     saveQueueInActivity(queue);
+                    queueView.updateText(context);
 
                 } catch (JSONException e) {
                     e.printStackTrace();

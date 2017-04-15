@@ -1,13 +1,8 @@
 package nl.rickhutten.homeremote.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
@@ -33,7 +28,6 @@ import nl.rickhutten.homeremote.net.GETJSONRequest;
 import nl.rickhutten.homeremote.net.OnJSONDownloaded;
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.Utils;
-import nl.rickhutten.homeremote.view.MusicControlView;
 import nl.rickhutten.homeremote.dialog.VolumeDialog;
 import nl.rickhutten.homeremote.view.SongView;
 
@@ -42,8 +36,6 @@ public class AlbumOverviewActivity extends MusicActivity {
     private String albumArtist;
     private String albumName;
     public SharedPreferences sp;
-    public MusicControlView musicControlView;
-    private BroadcastReceiver broadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +50,6 @@ public class AlbumOverviewActivity extends MusicActivity {
         }
 
         // Add view to main activity
-        musicControlView = new MusicControlView(this);
         ((RelativeLayout) findViewById(R.id.activity_album_overview_container)).addView(musicControlView);
 
         this.albumArtist = getIntent().getStringExtra("artist");
@@ -81,15 +72,6 @@ public class AlbumOverviewActivity extends MusicActivity {
                 .config(Bitmap.Config.RGB_565).into(topView);
 
         setAlbum();
-
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-//                Log.i("AlbumOverviewActivity", "Push Received!");
-                musicControlView.setNewSongComing(true);
-                musicControlView.update();
-            }
-        };
     }
 
     public void setAlbum() {
@@ -130,24 +112,6 @@ public class AlbumOverviewActivity extends MusicActivity {
             SongView songView = new SongView(this, playlist, i, (float) song.getDouble("duration"));
             songContainer.addView(songView);
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        Log.i("AlbumOverviewActivity", "onResume MusicControlView ID: " + musicControlView.ID);
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter("pushReceived"));
-        musicControlView.setActive(true);
-        musicControlView.updateHard();
-    }
-
-    @Override
-    protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-//        Log.i("AlbumOverviewActivity", "onPause MusicControlView ID: " + musicControlView.ID);
-        musicControlView.setActive(false);
-        super.onPause();
     }
 
     @Override

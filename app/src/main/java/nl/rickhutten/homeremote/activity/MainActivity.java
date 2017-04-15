@@ -1,14 +1,10 @@
 package nl.rickhutten.homeremote.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -27,13 +23,9 @@ import nl.rickhutten.homeremote.gcm.RegistrationIntentService;
 import nl.rickhutten.homeremote.view.SlidingTabLayout;
 import nl.rickhutten.homeremote.fragment.AlbumFragment;
 import nl.rickhutten.homeremote.fragment.ArtistFragment;
-import nl.rickhutten.homeremote.view.MusicControlView;
 import nl.rickhutten.homeremote.dialog.VolumeDialog;
 
 public class MainActivity extends MusicActivity {
-
-    public MusicControlView musicControlView;
-    private BroadcastReceiver broadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +34,6 @@ public class MainActivity extends MusicActivity {
         setContentView(R.layout.activity_main);
 
         // Add view to main activity
-        musicControlView = new MusicControlView(this);
         ((RelativeLayout) findViewById(R.id.activity_main_container)).addView(musicControlView);
 
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
@@ -56,14 +47,6 @@ public class MainActivity extends MusicActivity {
         mTabs.setBackgroundResource(R.color.primary);
         mTabs.setViewPager(mPager);
         findViewById(R.id.tabs).setPadding(0, 112, 0, 0);
-//
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                musicControlView.setNewSongComing(true);
-                musicControlView.update();
-            }
-        };
 
         if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
@@ -71,24 +54,6 @@ public class MainActivity extends MusicActivity {
             startService(intent);
         }
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        Log.i("MainActivity", "onResume MusicControlView ID: " + musicControlView.ID);
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter("pushReceived"));
-        musicControlView.setActive(true);
-        musicControlView.updateHard();
-    }
-
-    @Override
-    protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-//        Log.i("MainActivity", "onPause MusicControlView ID: " + musicControlView.ID);
-        musicControlView.setActive(false);
-        super.onPause();
     }
 
     @Override
@@ -138,10 +103,10 @@ public class MainActivity extends MusicActivity {
         return true;
     }
 
-    class MyPagerAdapter extends FragmentPagerAdapter {
+    private class MyPagerAdapter extends FragmentPagerAdapter {
 
         String[] tabTitles;
-        public MyPagerAdapter(FragmentManager fm) {
+        MyPagerAdapter(FragmentManager fm) {
             super(fm);
             tabTitles = getResources().getStringArray(R.array.tabTitles);
         }

@@ -1,12 +1,7 @@
 package nl.rickhutten.homeremote.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
@@ -41,9 +36,7 @@ import nl.rickhutten.homeremote.dialog.VolumeDialog;
 public class ArtistOverviewActivity extends MusicActivity {
 
     private String artistName;
-    public MusicControlView musicControlView;
     private LinearLayout songContainer;
-    private BroadcastReceiver broadcastReceiver;
     private LinearLayout albumContainer;
     private ArrayList<ArrayList<String>> queue;
     private int offset = 0;
@@ -61,7 +54,6 @@ public class ArtistOverviewActivity extends MusicActivity {
         }
 
         // Add music control view
-        musicControlView = new MusicControlView(this);
         ((RelativeLayout) findViewById(R.id.activity_artist_overview_container)).addView(musicControlView);
 
         songContainer = (LinearLayout) findViewById(R.id.songContainer);
@@ -122,15 +114,6 @@ public class ArtistOverviewActivity extends MusicActivity {
             }
         });
         getArtistRequest.execute(URL.getArtistUrl(this, artistName));
-
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-//                Log.i("ArtistOverviewActivity", "Push Received!");
-                musicControlView.setNewSongComing(true);
-                musicControlView.update();
-            }
-        };
     }
 
     public MusicControlView getMusicControlView() {
@@ -175,24 +158,6 @@ public class ArtistOverviewActivity extends MusicActivity {
         } catch (JSONException e){
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        Log.i("ArtistOverviewActivity", "onResume MusicControlView ID: " + musicControlView.ID);
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter("pushReceived"));
-        musicControlView.setActive(true);
-        musicControlView.updateHard();
-    }
-
-    @Override
-    protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-        musicControlView.setActive(false);
-//        Log.i("ArtistOverviewActivity", "onPause MusicControlView ID: " + musicControlView.ID);
-        super.onPause();
     }
 
     @Override

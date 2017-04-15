@@ -1,84 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/music_control_view_container"
     android:layout_width="match_parent"
     android:layout_height="@dimen/play_bar_height"
     android:clipChildren="false"
-    android:layout_alignParentBottom="true"
-    android:id="@+id/music_control_view_container"
-    android:background="@color/white_trans">
+    android:layout_alignParentBottom="true">
 
-    <nl.rickhutten.homeremote.view.MusicProgressView
-        android:thumb="@null"
-        android:layout_marginTop="-10dp"
-        android:layout_marginLeft="-17dp"
-        android:layout_marginRight="-17dp"
-        android:id="@+id/progressBar"
-        android:max="10000"
+    <nl.rickhutten.homeremote.view.QueueView
+        android:id="@+id/queueView"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:progress="0"
-        android:secondaryProgress="10000"/>
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"/>
 
-    <ImageView
-        android:id="@+id/playPause"
-        android:alpha="0.5"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="2dp"
-        android:src="@drawable/ic_play_circle_outline_black_48dp"/>
-
-    <ImageView
-        android:id="@+id/next"
-        android:alpha="0.5"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:layout_toRightOf="@id/playPause"
-        android:layout_marginTop="7dp"
-        android:layout_marginLeft="12dp"
-        android:src="@drawable/ic_skip_next_black_48dp"/>
-
-    <ImageView
-        android:id="@+id/prev"
-        android:alpha="0.5"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:layout_toLeftOf="@id/playPause"
-        android:layout_marginTop="7dp"
-        android:layout_marginRight="12dp"
-        android:src="@drawable/ic_skip_previous_black_48dp"/>
-
-    <TextView
-        android:id="@+id/playingText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="15sp"
-        android:layout_centerHorizontal="true"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/play_bar_height"
+        android:clipChildren="false"
+        android:id="@+id/music_control_bar_container"
+        android:background="@color/white_trans"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="2dp"
-        android:textColor="@color/textColor"
-        android:text="Title - Album"
-        android:lines="1"/>
+        android:layout_alignParentStart="true">
 
-    <ImageView
-        android:id="@+id/queueButton"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:alpha="0.5"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="16dp"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_queue_music_black_48dp"/>
+        <nl.rickhutten.homeremote.view.MusicProgressView
+            android:thumb="@null"
+            android:layout_marginTop="-10dp"
+            android:layout_marginLeft="-17dp"
+            android:layout_marginRight="-17dp"
+            android:id="@+id/progressBar"
+            android:max="10000"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:progress="0"
+            android:secondaryProgress="10000"/>
 
-    <ImageView
-        android:id="@+id/optionsButton"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:alpha="0.5"
-        android:layout_marginTop="14dp"
-        android:layout_marginStart="16dp"
-        android:layout_alignParentStart="true"
-        android:src="@drawable/ic_more_vert_black_48dp"/>
+        <ImageView
+            android:id="@+id/playPause"
+            android:alpha="0.5"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="2dp"
+            android:src="@drawable/ic_play_circle_outline_black_48dp"/>
+
+        <ImageView
+            android:id="@+id/next"
+            android:alpha="0.5"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_toRightOf="@id/playPause"
+            android:layout_marginTop="7dp"
+            android:layout_marginLeft="12dp"
+            android:src="@drawable/ic_skip_next_black_48dp"/>
+
+        <ImageView
+            android:id="@+id/prev"
+            android:alpha="0.5"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_toLeftOf="@id/playPause"
+            android:layout_marginTop="7dp"
+            android:layout_marginRight="12dp"
+            android:src="@drawable/ic_skip_previous_black_48dp"/>
+
+        <TextView
+            android:id="@+id/playingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_centerHorizontal="true"
+
+            android:layout_below="@id/playPause"
+            android:layout_marginBottom="2dp"
+            android:textColor="@color/textColor"
+            android:text="testiereeeee"
+            android:lines="1"/>
+
+        <ImageView
+            android:id="@+id/queueButton"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:alpha="0.5"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="16dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_queue_music_black_48dp"/>
+
+        <ImageView
+            android:id="@+id/optionsButton"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:alpha="0.5"
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="16dp"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/ic_more_vert_black_48dp"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>
