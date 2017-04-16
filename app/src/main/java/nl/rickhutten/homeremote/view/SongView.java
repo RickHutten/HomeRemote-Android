@@ -10,8 +10,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
+import nl.rickhutten.homeremote.activity.MusicActivity;
 import nl.rickhutten.homeremote.net.OnTaskCompleted;
 import nl.rickhutten.homeremote.net.POSTRequest;
 import nl.rickhutten.homeremote.R;
@@ -20,13 +19,12 @@ import nl.rickhutten.homeremote.URL;
 public class SongView extends RelativeLayout {
 
     private View rootView;
-    private Context context;
-    private String artist;
-    private String album;
-    private String title;
-    private ArrayList<ArrayList<String>> queue;
+    public String artist;
+    public String album;
+    public String title;
     private float duration;
     private SharedPreferences sp;
+    private MusicActivity activity;
 
     @Deprecated
     public SongView(Context context) {
@@ -34,20 +32,17 @@ public class SongView extends RelativeLayout {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         rootView = inflater.inflate(R.layout.view_song, this, false);
         addView(rootView);
-        ((TextView)findViewById(R.id.songName)).setText("[NO TITLE]");
     }
 
-    public SongView(Context context, ArrayList<ArrayList<String>> queue,
-                    int positionInQueue, float duration) {
-        super(context);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public SongView(MusicActivity activity, String artist, String album, String title, float duration) {
+        super(activity);
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         rootView = inflater.inflate(R.layout.view_song, this, false);
         addView(rootView);
-        this.context = context;
-        this.artist = queue.get(positionInQueue).get(0);
-        this.album = queue.get(positionInQueue).get(1);
-        this.title = queue.get(positionInQueue).get(2);
-        this.queue = queue;
+        this.activity = activity;
+        this.artist = artist;
+        this.album = album;
+        this.title = title;
         this.duration = duration;
 
         createView();
@@ -90,25 +85,27 @@ public class SongView extends RelativeLayout {
                     @Override
                     public void onTaskCompleted(String result) {
                         setPlayingIcon(true);
-                        sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+                        sp = activity.getSharedPreferences("prefs", Context.MODE_PRIVATE);
                         sp.edit().putBoolean("paused", false).apply();
                         // Dont update musicControlView, its updated from push notification
                     }
                 });
-                playSong.execute(URL.getPlaySongUrl(context));
-
+                playSong.execute(URL.getPlaySongUrl(activity));
 
                 // Send the queue to the server
                 //TODO: Send the queue in JSON format
                 String data_string = "";
-                for (ArrayList<String> song : queue) {
-                    data_string += song.get(0) + ":" + song.get(1) + ":" + song.get(2);
-                    if (song != queue.get(queue.size() - 1)) {
+                SongView songView;
+                for (int i = 0; i < activity.getSongList().size(); i++) {
+                    songView = activity.getSongList().get(i);
+                    data_string += songView.artist + ":" + songView.album + ":" + songView.title;
+                    if (i != activity.getSongList().size() - 1) {
                         data_string += ";";
                     }
                 }
+
                 POSTRequest setQueue = new POSTRequest(data_string);
-                setQueue.execute(URL.getSetQueueUrl(context));
+                setQueue.execute(URL.getSetQueueUrl(activity));
             }
         });
     }

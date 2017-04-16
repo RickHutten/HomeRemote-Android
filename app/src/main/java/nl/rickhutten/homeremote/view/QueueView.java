@@ -14,10 +14,6 @@ import nl.rickhutten.homeremote.activity.MusicActivity;
 
 public class QueueView extends RelativeLayout {
 
-    private View rootView;
-    private Context context;
-    private ArrayList<ArrayList<String>> queue;
-
     public QueueView(Context context) {
         this(context, null);
     }
@@ -26,19 +22,18 @@ public class QueueView extends RelativeLayout {
         super(context, attrs);
         // Inflate layout from XML file
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        rootView = inflater.inflate(R.layout.view_queue, this, false);
+        View rootView = inflater.inflate(R.layout.view_queue, this, false);
         addView(rootView);
-
-        this.context = context;
     }
 
     public void updateQueue(MusicActivity activity) {
-        queue = activity.getQueue();
+        ArrayList<ArrayList<String>> queue = activity.getQueue();
         LinearLayout listView = (LinearLayout) findViewById(R.id.queueLinearLayout);
         listView.removeAllViews();
         SongView songView;
         for (int i = 0; i < queue.size(); i++) {
-            songView = new SongView(context, queue, i, Float.parseFloat(queue.get(i).get(3)));
+            songView = new SongView(activity, queue.get(i).get(0), queue.get(i).get(1),
+                    queue.get(i).get(2), Float.parseFloat(queue.get(i).get(3)));
             listView.addView(songView);
         }
     }

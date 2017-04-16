@@ -32,7 +32,7 @@ public class ArtistOverviewActivity extends MusicActivity {
     private String artistName;
     private LinearLayout songContainer;
     private LinearLayout albumContainer;
-    private ArrayList<ArrayList<String>> queue;
+    private ArrayList<ArrayList<String>> queue2;
     private int offset = 0;
     private JSONObject album;
 
@@ -56,6 +56,7 @@ public class ArtistOverviewActivity extends MusicActivity {
         // Set artist name
         ((TextView) findViewById(R.id.artistName)).setText(artistName);
 
+        // Set scrolling behaviour
         final ImageView topView = (ImageView) findViewById(R.id.topview);
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
         scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
@@ -70,6 +71,10 @@ public class ArtistOverviewActivity extends MusicActivity {
         Picasso.with(this).load(URL.getArtistImageUrl(this, artistName)).centerCrop().resize(500, 500)
                 .config(Bitmap.Config.RGB_565).into(topView);
 
+        getArtistData();
+    }
+
+    private void getArtistData() {
         // Get the artist data
         GETJSONRequest getArtistRequest = new GETJSONRequest(new OnJSONDownloaded() {
             @Override
@@ -78,7 +83,7 @@ public class ArtistOverviewActivity extends MusicActivity {
                     JSONArray albums = jObject.getJSONArray("albums");
 
                     // Make queue
-                    queue = new ArrayList<>();
+                    queue2 = new ArrayList<>();
                     for (int i = 0; i < albums.length(); i++) {
                         JSONObject album = albums.getJSONObject(i);
                         JSONArray songs = album.getJSONArray("songs");
@@ -87,7 +92,7 @@ public class ArtistOverviewActivity extends MusicActivity {
                             s.add(artistName);
                             s.add(album.getString("title"));
                             s.add(songs.getJSONObject(j).getString("title"));
-                            queue.add(s);
+                            queue2.add(s);
                         }
                     }
 
@@ -97,7 +102,7 @@ public class ArtistOverviewActivity extends MusicActivity {
                         // Add album in horizontal album scrollview
                         addAlbum(album);
                         // Add all songs in song list
-                        addSongs(album, queue, offset);
+                        addSongs(album, queue2, offset);
 
                         offset += album.getJSONArray("songs").length();
                     }
@@ -126,7 +131,7 @@ public class ArtistOverviewActivity extends MusicActivity {
         albumContainer.addView(albumCardView);
     }
 
-    private void addSongs(JSONObject album, ArrayList<ArrayList<String>> queue, int songOffset) {
+    private void addSongs(JSONObject album, ArrayList<ArrayList<String>> queue2, int songOffset) {
 
         // Add an AlbumExpandedCardView
         AlbumExpandedCardView cardView = new AlbumExpandedCardView(this);
@@ -140,14 +145,17 @@ public class ArtistOverviewActivity extends MusicActivity {
         }
         try {
             JSONArray songs = album.getJSONArray("songs");
+            SongView songView;
             for (int i = 0; i < songs.length(); i++) {
                 // Make song object
                 JSONObject song = songs.getJSONObject(i);
-                float duration = Float.parseFloat(song.getString("duration"));
-                SongView songView = new SongView(this, queue, songOffset + i, duration);
+                songView = new SongView(this, song.getString("artist"),  album.getString("title"),
+                        song.getString("title"),
+                        (float) song.getDouble("duration"));
 
-                // Add song to cardview
+                // Add song to cardview and activity songList
                 cardView.addSong(songView);
+                addToSongList(songView);
             }
         } catch (JSONException e) {
             e.printStackTrace();

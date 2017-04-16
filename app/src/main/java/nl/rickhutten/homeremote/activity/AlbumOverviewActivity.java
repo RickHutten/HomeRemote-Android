@@ -51,6 +51,7 @@ public class AlbumOverviewActivity extends MusicActivity {
         ((TextView) findViewById(R.id.artistText)).setText(albumArtist);
         ((TextView) findViewById(R.id.albumText)).setText(albumName);
 
+        // Set scrolling behaviour
         final ImageView topView = (ImageView) findViewById(R.id.topview);
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
         scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
@@ -84,27 +85,17 @@ public class AlbumOverviewActivity extends MusicActivity {
     }
 
     private void addSongs(JSONObject album) throws JSONException {
-        // Create playlist
-        ArrayList<ArrayList<String>> playlist = new ArrayList<>();
         LinearLayout songContainer = (LinearLayout) findViewById(R.id.song_container);
-
         JSONArray songs = album.getJSONArray("songs");
 
         for (int i = 0; i < songs.length(); i++) {
             JSONObject song = (JSONObject) songs.get(i);
 
-            ArrayList<String> songList = new ArrayList<>();
-            songList.add(song.getString("artist"));
-            songList.add(albumName);
-            songList.add(song.getString("title"));
-            playlist.add(songList);
-        }
-
-        for (int i = 0; i < songs.length(); i++) {
-            JSONObject song = (JSONObject) songs.get(i);
-            // Add songs to linearlayout
-            SongView songView = new SongView(this, playlist, i, (float) song.getDouble("duration"));
+            SongView songView = new SongView(this, song.getString("artist"), albumName,
+                    song.getString("title"),
+                    (float) song.getDouble("duration"));
             songContainer.addView(songView);
+            addToSongList(songView);
         }
     }
 }

@@ -18,6 +18,7 @@ import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.Utils;
 import nl.rickhutten.homeremote.dialog.VolumeDialog;
 import nl.rickhutten.homeremote.view.MusicControlView;
+import nl.rickhutten.homeremote.view.SongView;
 
 
 /**
@@ -29,11 +30,18 @@ abstract public class MusicActivity extends AppCompatActivity {
     public MusicControlView musicControlView;
     public BroadcastReceiver broadcastReceiver;
 
+    private ArrayList<ArrayList<String>> queue = null;  // [[artist, album, song, duration], ...]
+
+    private ArrayList<SongView> songList = new ArrayList<>();  // List of visible songs in activity
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Create new MusicControlView
         musicControlView = new MusicControlView(this);
+
+        // Register broadcast receiver (for notifications)
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -43,14 +51,20 @@ abstract public class MusicActivity extends AppCompatActivity {
         };
     }
 
-    private ArrayList<ArrayList<String>> queue = null;  // [[artist, album, song, duration], ...]
-
     public void setQueue(ArrayList<ArrayList<String>> queue) {
         this.queue = queue;
     }
 
     public ArrayList<ArrayList<String>> getQueue() {
-        return this.queue;
+        return queue;
+    }
+
+    public ArrayList<SongView> getSongList() {
+        return songList;
+    }
+
+    public void addToSongList(SongView songView) {
+        songList.add(songView);
     }
 
     @Override
