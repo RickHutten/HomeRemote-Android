@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.activity.MusicActivity;
@@ -14,6 +16,7 @@ public class QueueView extends RelativeLayout {
 
     private View rootView;
     private Context context;
+    private ArrayList<ArrayList<String>> queue;
 
     public QueueView(Context context) {
         this(context, null);
@@ -29,8 +32,14 @@ public class QueueView extends RelativeLayout {
         this.context = context;
     }
 
-    public void updateText(MusicActivity activity) {
-        TextView textView = (TextView) findViewById(R.id.testText);
-        textView.setText(activity.getQueue().toString());
+    public void updateQueue(MusicActivity activity) {
+        queue = activity.getQueue();
+        LinearLayout listView = (LinearLayout) findViewById(R.id.queueLinearLayout);
+        listView.removeAllViews();
+        SongView songView;
+        for (int i = 0; i < queue.size(); i++) {
+            songView = new SongView(context, queue, i, Float.parseFloat(queue.get(i).get(3)));
+            listView.addView(songView);
+        }
     }
 }

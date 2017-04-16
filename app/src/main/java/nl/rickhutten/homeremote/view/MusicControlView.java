@@ -50,6 +50,17 @@ public class MusicControlView extends RelativeLayout {
     private QueueView queueView;
     private View container;
 
+    // QueueView
+    private int originalHeight;
+    private LayoutParams lp;
+    private boolean actionBarWasShown = true;
+    private ActionBar actionBar;
+
+    @Deprecated
+    public MusicControlView(Context context) {
+        this((MusicActivity) context);
+    }
+
     public MusicControlView(final MusicActivity context) {
         super(context);
         this.context = context;
@@ -65,14 +76,28 @@ public class MusicControlView extends RelativeLayout {
         container = rootView.findViewById(R.id.music_control_view_container);
         addView(rootView);
         this.setClipChildren(false);
-
         this.setTransitionName("musicControlView");
         sp = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
         paused = sp.getBoolean("paused", true);
+
+        // Set QueueView variables
+        originalHeight = (int) context.getResources().getDimension(R.dimen.play_bar_height);
+        lp = (LayoutParams) container.getLayoutParams();
+        actionBar = context.getSupportActionBar();
+
+        // Set all click listeners
         setClickListeners();
     }
 
     private void setClickListeners() {
+        // Prevent clicks from going through container in QueueView
+        findViewById(R.id.music_control_bar_container).setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
         findViewById(R.id.playPause).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,77 +187,84 @@ public class MusicControlView extends RelativeLayout {
         });
 
         findViewById(R.id.queueButton).setOnClickListener(new OnClickListener() {
-            private int originalHeight = (int)context.getResources().getDimension(R.dimen.play_bar_height);
-            private LayoutParams lp = (LayoutParams) container.getLayoutParams();
-            private boolean actionBarWasShown = true;
-            private ActionBar actionBar = context.getSupportActionBar();
-
             @Override
             public void onClick(View v) {
                 // Toggle visibility
                 if (queueView.getVisibility() == VISIBLE) {
-                    // QueueView going down
-                    ValueAnimator anim = ValueAnimator.ofInt(Utils.getScreenHeight(context), originalHeight);
-                    anim.setDuration(300);
-                    anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            lp.height = (int)animation.getAnimatedValue();
-                            container.setLayoutParams(lp);
-                            if (actionBarWasShown) {
-                                actionBar.setHideOffset(actionBar.getHeight() - container.getTop());
-                            }
-                        }
-                    });
-                    anim.addListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            queueView.setVisibility(INVISIBLE);
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-
-                        }
-                    });
-                    Path path = new Path();
-                    path.cubicTo(0.75f, 0.25f, 0.95f, 0.75f, 1f, 1f);  // Bezier curve
-                    anim.setInterpolator(new PathInterpolator(path));
-                    anim.start();
+                    hideQueueView();
                 } else {
-                    // QueueView going up
-                    queueView.setVisibility(VISIBLE);
-                    actionBarWasShown = actionBar.getHideOffset() < 0.5*actionBar.getHeight();
-                    ValueAnimator anim = ValueAnimator.ofInt(originalHeight, Utils.getScreenHeight(context));
-                    anim.setDuration(500);
-                    anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            lp.height = (int)animation.getAnimatedValue();
-                            container.setLayoutParams(lp);
-                            if (actionBarWasShown) {
-                                actionBar.setHideOffset(actionBar.getHeight() - container.getTop());
-                            }
-                        }
-                    });
-                    Path path = new Path();
-                    path.cubicTo(0.1f, 1f, 0.5f, 1f, 1f, 1f);  // Bezier curve
-                    anim.setInterpolator(new PathInterpolator(path));
-                    anim.start();
+                    showQueueView();
                 }
-
             }
         });
+    }
+
+    public boolean isQueueViewVisible() {
+        return queueView.getVisibility() == VISIBLE;
+    }
+
+    public void showQueueView() {
+        if (!isQueueViewVisible()) {
+            // QueueView going up
+            queueView.setVisibility(VISIBLE);
+            actionBarWasShown = actionBar.getHideOffset() < 0.5 * actionBar.getHeight();
+            ValueAnimator anim = ValueAnimator.ofInt(originalHeight, Utils.getScreenHeight(context));
+            anim.setDuration(300);
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    lp.height = (int) animation.getAnimatedValue();
+                    container.setLayoutParams(lp);
+                    if (actionBarWasShown) {
+                        actionBar.setHideOffset(actionBar.getHeight() - container.getTop());
+                    }
+                }
+            });
+            Path path = new Path();
+            path.cubicTo(0.1f, 1f, 0.5f, 1f, 1f, 1f);  // Bezier curve
+            anim.setInterpolator(new PathInterpolator(path));
+            anim.start();
+        }
+    }
+
+    public void hideQueueView() {
+        if (isQueueViewVisible()) {
+            // QueueView going down
+            ValueAnimator anim = ValueAnimator.ofInt(Utils.getScreenHeight(context), originalHeight);
+            anim.setDuration(200);
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    lp.height = (int) animation.getAnimatedValue();
+                    container.setLayoutParams(lp);
+                    if (actionBarWasShown) {
+                        actionBar.setHideOffset(actionBar.getHeight() - container.getTop());
+                    }
+                }
+            });
+            anim.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    queueView.setVisibility(INVISIBLE);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                }
+            });
+            Path path = new Path();
+            path.cubicTo(0.75f, 0.25f, 0.95f, 0.75f, 1f, 1f);  // Bezier curve
+            anim.setInterpolator(new PathInterpolator(path));
+            anim.start();
+        }
     }
 
     /**
@@ -242,9 +274,9 @@ public class MusicControlView extends RelativeLayout {
         // Set play pause button
         paused = sp.getBoolean("paused", true);
         if (paused) {
-            ((ImageView)findViewById(R.id.playPause)).setImageResource(R.drawable.ic_play_circle_outline_black_48dp);
+            ((ImageView) findViewById(R.id.playPause)).setImageResource(R.drawable.ic_play_circle_outline_black_48dp);
         } else {
-            ((ImageView)findViewById(R.id.playPause)).setImageResource(R.drawable.ic_pause_circle_outline_black_48dp);
+            ((ImageView) findViewById(R.id.playPause)).setImageResource(R.drawable.ic_pause_circle_outline_black_48dp);
         }
 
         // Set text
@@ -339,10 +371,11 @@ public class MusicControlView extends RelativeLayout {
                         song.add(songs.getJSONObject(i).getString("artist"));
                         song.add(songs.getJSONObject(i).getString("album"));
                         song.add(songs.getJSONObject(i).getString("song"));
+                        song.add(songs.getJSONObject(i).getString("duration"));
                         queue.add(song);
                     }
                     saveQueueInActivity(queue);
-                    queueView.updateText(context);
+                    queueView.updateQueue(context);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -367,7 +400,7 @@ public class MusicControlView extends RelativeLayout {
             public void onTaskCompleted(String result) {
                 sp.edit().putBoolean("paused", true).apply();
                 paused = true;
-                ((ImageView)findViewById(R.id.playPause))
+                ((ImageView) findViewById(R.id.playPause))
                         .setImageResource(R.drawable.ic_play_circle_outline_black_48dp);
             }
         });
@@ -380,7 +413,7 @@ public class MusicControlView extends RelativeLayout {
             public void onTaskCompleted(String result) {
                 sp.edit().putBoolean("paused", false).apply();
                 paused = false;
-                ((ImageView)findViewById(R.id.playPause))
+                ((ImageView) findViewById(R.id.playPause))
                         .setImageResource(R.drawable.ic_pause_circle_outline_black_48dp);
             }
         });
@@ -395,13 +428,13 @@ public class MusicControlView extends RelativeLayout {
         this.active = b;
         if (!b) {
             // If not active, save the progress in shared preferences
-            sp.edit().putFloat("progress", progressView.getSeconds()).commit();
+            sp.edit().putFloat("progress", progressView.getSeconds()).apply();
         }
     }
 
     public void setNewSongComing(boolean newSongComing) {
         if (newSongComing) {
-            sp.edit().putFloat("progress", 0f).commit();
+            sp.edit().putFloat("progress", 0f).apply();
         }
         this.newSongComing = newSongComing;
     }

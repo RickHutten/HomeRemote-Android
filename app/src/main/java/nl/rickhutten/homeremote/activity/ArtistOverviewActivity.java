@@ -3,10 +3,6 @@ package nl.rickhutten.homeremote.activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,16 +18,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import nl.rickhutten.homeremote.net.GETJSONRequest;
-import nl.rickhutten.homeremote.net.OnJSONDownloaded;
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.URL;
-import nl.rickhutten.homeremote.Utils;
+import nl.rickhutten.homeremote.net.GETJSONRequest;
+import nl.rickhutten.homeremote.net.OnJSONDownloaded;
 import nl.rickhutten.homeremote.view.AlbumCardView;
 import nl.rickhutten.homeremote.view.AlbumExpandedCardView;
 import nl.rickhutten.homeremote.view.MusicControlView;
 import nl.rickhutten.homeremote.view.SongView;
-import nl.rickhutten.homeremote.dialog.VolumeDialog;
 
 public class ArtistOverviewActivity extends MusicActivity {
 
@@ -140,7 +134,7 @@ public class ArtistOverviewActivity extends MusicActivity {
             cardView.setAlbum(artistName, album.getString("title"));
             // Add album to songcontainer
             songContainer.addView(cardView);
-        } catch (JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
             return;
         }
@@ -155,43 +149,8 @@ public class ArtistOverviewActivity extends MusicActivity {
                 // Add song to cardview
                 cardView.addSong(songView);
             }
-        } catch (JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        supportFinishAfterTransition();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.action_volume:
-                // Show volume dialog
-                new VolumeDialog(this, R.style.ThemeDialog).show();
-                return true;
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.action_shutdown:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(R.string.ask_shutdown)
-                        .setPositiveButton("Yes", Utils.getDialogClickListener(this))
-                        .setNegativeButton("No", Utils.getDialogClickListener(this)).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 }

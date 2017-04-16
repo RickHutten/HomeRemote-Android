@@ -3,23 +3,19 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/cardView"
     android:layout_width="@dimen/album_width"
-    android:layout_height="@dimen/album_height"
-    android:clipChildren="false">
+    android:layout_height="@dimen/album_height" >
 
     <RelativeLayout
         android:elevation="2dp"
         android:layout_margin="8dp"
-        android:clipChildren="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/card">
+        android:background="@drawable/card" >
 
         <ImageView
             android:id="@+id/albumImage"
             android:layout_width="@dimen/album_image_size"
-            android:layout_height="@dimen/album_image_size"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+            android:layout_height="@dimen/album_image_size" />
 
         <RelativeLayout
             android:layout_below="@id/albumImage"
@@ -39,8 +35,7 @@
                 android:layout_marginRight="5dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:layout_alignParentTop="true"
-                android:layout_alignEnd="@+id/artistText" />
+                android:layout_alignParentTop="true" />
 
             <TextView
                 android:id="@+id/artistText"
@@ -49,11 +44,10 @@
                 android:textSize="8sp"
                 android:text="Artist"
                 android:textColor="@color/textColor"
-                android:singleLine="true"
+                android:maxLines="1"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_below="@+id/albumText"
-                android:layout_alignParentStart="true" />
+                android:layout_below="@+id/albumText" />
         </RelativeLayout>
 
     </RelativeLayout>

@@ -4,10 +4,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,12 +19,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.URL;
 import nl.rickhutten.homeremote.net.GETJSONRequest;
 import nl.rickhutten.homeremote.net.OnJSONDownloaded;
-import nl.rickhutten.homeremote.R;
-import nl.rickhutten.homeremote.Utils;
-import nl.rickhutten.homeremote.dialog.VolumeDialog;
 import nl.rickhutten.homeremote.view.SongView;
 
 public class AlbumOverviewActivity extends MusicActivity {
@@ -54,8 +48,8 @@ public class AlbumOverviewActivity extends MusicActivity {
 
         this.albumArtist = getIntent().getStringExtra("artist");
         this.albumName = getIntent().getStringExtra("album");
-        ((TextView)findViewById(R.id.artistText)).setText(albumArtist);
-        ((TextView)findViewById(R.id.albumText)).setText(albumName);
+        ((TextView) findViewById(R.id.artistText)).setText(albumArtist);
+        ((TextView) findViewById(R.id.albumText)).setText(albumName);
 
         final ImageView topView = (ImageView) findViewById(R.id.topview);
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
@@ -89,7 +83,7 @@ public class AlbumOverviewActivity extends MusicActivity {
         getSongs.execute(URL.getAlbumUrl(this, albumArtist, albumName));
     }
 
-    private void addSongs(JSONObject album) throws JSONException{
+    private void addSongs(JSONObject album) throws JSONException {
         // Create playlist
         ArrayList<ArrayList<String>> playlist = new ArrayList<>();
         LinearLayout songContainer = (LinearLayout) findViewById(R.id.song_container);
@@ -97,7 +91,7 @@ public class AlbumOverviewActivity extends MusicActivity {
         JSONArray songs = album.getJSONArray("songs");
 
         for (int i = 0; i < songs.length(); i++) {
-            JSONObject song = (JSONObject)songs.get(i);
+            JSONObject song = (JSONObject) songs.get(i);
 
             ArrayList<String> songList = new ArrayList<>();
             songList.add(song.getString("artist"));
@@ -113,40 +107,4 @@ public class AlbumOverviewActivity extends MusicActivity {
             songContainer.addView(songView);
         }
     }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        supportFinishAfterTransition();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.action_volume:
-                // Show volume dialog
-                new VolumeDialog(this, R.style.ThemeDialog).show();
-                return true;
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.action_shutdown:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(R.string.ask_shutdown)
-                        .setPositiveButton("Yes", Utils.getDialogClickListener(this))
-                        .setNegativeButton("No", Utils.getDialogClickListener(this)).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
 }

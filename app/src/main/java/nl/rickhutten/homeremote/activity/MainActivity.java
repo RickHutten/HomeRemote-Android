@@ -6,24 +6,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import nl.rickhutten.homeremote.Utils;
 import nl.rickhutten.homeremote.fragment.PlaylistFragment;
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.gcm.RegistrationIntentService;
 import nl.rickhutten.homeremote.view.SlidingTabLayout;
 import nl.rickhutten.homeremote.fragment.AlbumFragment;
 import nl.rickhutten.homeremote.fragment.ArtistFragment;
-import nl.rickhutten.homeremote.dialog.VolumeDialog;
 
 public class MainActivity extends MusicActivity {
 
@@ -54,32 +48,6 @@ public class MainActivity extends MusicActivity {
             startService(intent);
         }
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.action_volume:
-                // Show volume dialog
-                new VolumeDialog(this, R.style.ThemeDialog).show();
-                return true;
-            case R.id.action_shutdown:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(R.string.ask_shutdown)
-                        .setPositiveButton("Yes", Utils.getDialogClickListener(this))
-                        .setNegativeButton("No", Utils.getDialogClickListener(this)).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     /**

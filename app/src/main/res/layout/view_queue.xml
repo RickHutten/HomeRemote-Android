@@ -1,20 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/queueScrollView"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/queueLinearLayout"
-        android:orientation="vertical"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:elevation="8dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="Queue"
+        android:textColor="@color/white"
+        android:textSize="26sp" />
 
-        <TextView
-            android:id="@+id/testText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/queueScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
 
-</ScrollView>
+        <LinearLayout
+            android:id="@+id/queueLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:divider="@drawable/divider"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/play_bar_height"
+            android:showDividers="middle" />
+
+    </ScrollView>
+
+</LinearLayout>
