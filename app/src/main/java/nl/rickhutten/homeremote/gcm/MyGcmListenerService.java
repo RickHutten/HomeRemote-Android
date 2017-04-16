@@ -19,12 +19,12 @@ public class MyGcmListenerService extends GcmListenerService {
      */
     @Override
     public void onMessageReceived(String from, Bundle data) {
+        Log.i("GCMListener", "Message Received");
+
         String artist = data.getString("artist");
         String album = data.getString("album");
         String song = data.getString("song");
         float duration = Float.parseFloat(data.getString("duration"));
-
-//        Log.v("GcmListenerService", "Artist: " + artist + " Album: " + album + " Song: " + song);
 
         SharedPreferences sp = getSharedPreferences("prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();

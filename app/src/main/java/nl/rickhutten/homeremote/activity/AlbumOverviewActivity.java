@@ -1,6 +1,5 @@
 package nl.rickhutten.homeremote.activity;
 
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -17,8 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.URL;
 import nl.rickhutten.homeremote.net.GETJSONRequest;
@@ -29,14 +26,11 @@ public class AlbumOverviewActivity extends MusicActivity {
 
     private String albumArtist;
     private String albumName;
-    public SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_overview);
-
-        sp = getSharedPreferences("prefs", MODE_PRIVATE);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -71,7 +65,7 @@ public class AlbumOverviewActivity extends MusicActivity {
 
     public void setAlbum() {
         // Download the songs
-        GETJSONRequest getSongs = new GETJSONRequest(new OnJSONDownloaded() {
+        new GETJSONRequest(new OnJSONDownloaded() {
             @Override
             public void onJSONCompleted(JSONObject jObject) {
                 try {
@@ -80,8 +74,7 @@ public class AlbumOverviewActivity extends MusicActivity {
                     e.printStackTrace();
                 }
             }
-        });
-        getSongs.execute(URL.getAlbumUrl(this, albumArtist, albumName));
+        }).execute(URL.getAlbumUrl(this, albumArtist, albumName));
     }
 
     private void addSongs(JSONObject album) throws JSONException {

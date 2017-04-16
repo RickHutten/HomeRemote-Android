@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import nl.rickhutten.homeremote.URL;
+import nl.rickhutten.homeremote.activity.MusicActivity;
 import nl.rickhutten.homeremote.net.GETRequest;
 import nl.rickhutten.homeremote.activity.MainActivity;
 import nl.rickhutten.homeremote.net.OnTaskCompleted;
@@ -47,15 +48,16 @@ public class AlbumFragment extends Fragment {
         });
         getArtists.execute(URL.getUrl(mainActivity, "/albums"));
 
-        final ScrollView scrollView = (ScrollView)layout.findViewById(R.id.scrollView);
+        final ScrollView scrollView = (ScrollView) layout.findViewById(R.id.scrollView);
         final SlidingTabLayout tabs = (SlidingTabLayout) mainActivity.findViewById(R.id.tabs);
         scrollView.setOnTouchListener(new View.OnTouchListener() {
             ActionBar actionBar = mainActivity.getSupportActionBar();
             int oldY = -1;
             int dy;
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                int posY = (int)event.getY()-actionBar.getHideOffset();
+                int posY = (int) event.getY() - actionBar.getHideOffset();
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_MOVE:
                         if (oldY == -1) {
@@ -64,8 +66,8 @@ public class AlbumFragment extends Fragment {
                         }
                         dy = posY - oldY;
                         oldY = posY;
-                        actionBar.setHideOffset(actionBar.getHideOffset()- dy);
-                        tabs.setPadding(0, actionBar.getHeight()-actionBar.getHideOffset(), 0, 0);
+                        actionBar.setHideOffset(actionBar.getHideOffset() - dy);
+                        tabs.setPadding(0, actionBar.getHeight() - actionBar.getHideOffset(), 0, 0);
                         break;
                     case MotionEvent.ACTION_UP:
                         oldY = -1;
@@ -75,9 +77,9 @@ public class AlbumFragment extends Fragment {
                             animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                 @Override
                                 public void onAnimationUpdate(ValueAnimator animation) {
-                                    int value = (int)animation.getAnimatedValue();
+                                    int value = (int) animation.getAnimatedValue();
                                     actionBar.setHideOffset(value);
-                                    tabs.setPadding(0, actionBar.getHeight()-value, 0, 0);
+                                    tabs.setPadding(0, actionBar.getHeight() - value, 0, 0);
                                 }
                             });
                             animation.start();
@@ -87,14 +89,14 @@ public class AlbumFragment extends Fragment {
                             animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                 @Override
                                 public void onAnimationUpdate(ValueAnimator animation) {
-                                    int value = (int)animation.getAnimatedValue();
+                                    int value = (int) animation.getAnimatedValue();
                                     actionBar.setHideOffset(value);
-                                    tabs.setPadding(0, actionBar.getHeight()-value, 0, 0);
+                                    tabs.setPadding(0, actionBar.getHeight() - value, 0, 0);
                                 }
                             });
                             animation.start();
                         }
-                        tabs.setPadding(0, actionBar.getHeight()-actionBar.getHideOffset(), 0, 0);
+                        tabs.setPadding(0, actionBar.getHeight() - actionBar.getHideOffset(), 0, 0);
                 }
                 return false;
             }
@@ -111,17 +113,17 @@ public class AlbumFragment extends Fragment {
         albumAdapter.set(arrayList);
         gridview.setAdapter(albumAdapter);
         // Get the height of the first view
-        int itemHeight = ((AlbumCardView)albumAdapter.getView(0, null, null)).getViewHeight();
+        int itemHeight = ((AlbumCardView) albumAdapter.getView(0, null, null)).getViewHeight();
 
-        gridview.setLayoutParams(new LinearLayout.LayoutParams(Utils.getScreenWidth(getContext()), itemHeight * (int)(Math.ceil(arrayList.size()/3))));
+        gridview.setLayoutParams(new LinearLayout.LayoutParams(Utils.getScreenWidth(getContext()), itemHeight * (int) (Math.ceil(arrayList.size() / 3))));
     }
 
-    public class AlbumAdapter extends BaseAdapter {
+    private class AlbumAdapter extends BaseAdapter {
         private Context context;
         private ArrayList<String> albumList;
 
         // Gets the context so it can be used later
-        public AlbumAdapter(Context context) {
+        AlbumAdapter(Context context) {
             this.context = context;
         }
 
@@ -151,9 +153,8 @@ public class AlbumFragment extends Fragment {
             if (convertView == null) {
                 // if it's not recycled, initialize some attributes
                 albumCardView = new AlbumCardView(context);
-                albumCardView.set((MainActivity)context, ((MainActivity)context).musicControlView);
-            }
-            else {
+                albumCardView.set((MusicActivity) context);
+            } else {
                 albumCardView = (AlbumCardView) convertView;
             }
             albumCardView.setAlbum(albumList.get(position).split(":")[0], albumList.get(position).split(":")[1]);

@@ -81,7 +81,7 @@ public class SongView extends RelativeLayout {
                 }
 
                 // Play the song
-                POSTRequest playSong = new POSTRequest(json.toString(), new OnTaskCompleted() {
+                new POSTRequest(json.toString(), new OnTaskCompleted() {
                     @Override
                     public void onTaskCompleted(String result) {
                         setPlayingIcon(true);
@@ -89,8 +89,7 @@ public class SongView extends RelativeLayout {
                         sp.edit().putBoolean("paused", false).apply();
                         // Dont update musicControlView, its updated from push notification
                     }
-                });
-                playSong.execute(URL.getPlaySongUrl(activity));
+                }).execute(URL.getPlaySongUrl(activity));
 
                 // Send the queue to the server
                 //TODO: Send the queue in JSON format

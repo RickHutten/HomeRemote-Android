@@ -33,25 +33,25 @@ public class ArtistFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.layout = (ViewGroup) inflater.inflate(R.layout.fragment_artist, container, false);
         mainActivity = (MainActivity) inflater.getContext();
-        GETRequest getArtists = new GETRequest(new OnTaskCompleted() {
+        new GETRequest(new OnTaskCompleted() {
             @Override
             public void onTaskCompleted(String result) {
                 if (!result.equals("")) {
                     setArtists(result);
                 }
             }
-        });
-        getArtists.execute(URL.getUrl(mainActivity, "/artists"));
+        }).execute(URL.getUrl(mainActivity, "/artists"));
 
-        final ScrollView scrollView = (ScrollView)layout.findViewById(R.id.scrollView);
+        final ScrollView scrollView = (ScrollView) layout.findViewById(R.id.scrollView);
         final SlidingTabLayout tabs = (SlidingTabLayout) mainActivity.findViewById(R.id.tabs);
         scrollView.setOnTouchListener(new View.OnTouchListener() {
             ActionBar actionBar = mainActivity.getSupportActionBar();
             int oldY = -1;
             int dy;
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                int posY = (int)event.getY()-actionBar.getHideOffset();
+                int posY = (int) event.getY() - actionBar.getHideOffset();
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_MOVE:
                         if (oldY == -1) {
@@ -60,8 +60,8 @@ public class ArtistFragment extends Fragment {
                         }
                         dy = posY - oldY;
                         oldY = posY;
-                        actionBar.setHideOffset(actionBar.getHideOffset()- dy);
-                        tabs.setPadding(0, actionBar.getHeight()-actionBar.getHideOffset(), 0, 0);
+                        actionBar.setHideOffset(actionBar.getHideOffset() - dy);
+                        tabs.setPadding(0, actionBar.getHeight() - actionBar.getHideOffset(), 0, 0);
                         break;
                     case MotionEvent.ACTION_UP:
                         oldY = -1;
@@ -71,9 +71,9 @@ public class ArtistFragment extends Fragment {
                             animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                 @Override
                                 public void onAnimationUpdate(ValueAnimator animation) {
-                                    int value = (int)animation.getAnimatedValue();
+                                    int value = (int) animation.getAnimatedValue();
                                     actionBar.setHideOffset(value);
-                                    tabs.setPadding(0, actionBar.getHeight()-value, 0, 0);
+                                    tabs.setPadding(0, actionBar.getHeight() - value, 0, 0);
                                 }
                             });
                             animation.start();
@@ -83,19 +83,18 @@ public class ArtistFragment extends Fragment {
                             animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                 @Override
                                 public void onAnimationUpdate(ValueAnimator animation) {
-                                    int value = (int)animation.getAnimatedValue();
+                                    int value = (int) animation.getAnimatedValue();
                                     actionBar.setHideOffset(value);
-                                    tabs.setPadding(0, actionBar.getHeight()-value, 0, 0);
+                                    tabs.setPadding(0, actionBar.getHeight() - value, 0, 0);
                                 }
                             });
                             animation.start();
                         }
-                        tabs.setPadding(0, actionBar.getHeight()-actionBar.getHideOffset(), 0, 0);
+                        tabs.setPadding(0, actionBar.getHeight() - actionBar.getHideOffset(), 0, 0);
                 }
                 return false;
             }
         });
-
         return layout;
     }
 
@@ -107,7 +106,7 @@ public class ArtistFragment extends Fragment {
         Collections.sort(arrayList);
 
         ArtistCardView artistCardView = new ArtistCardView(getContext());
-        artistCardView.set(mainActivity, mainActivity.musicControlView);
+        artistCardView.set(mainActivity);
         artistCardView.setFirstLetter(arrayList.get(0).charAt(0));
 
         for (String artist : arrayList) {
@@ -117,7 +116,7 @@ public class ArtistFragment extends Fragment {
 
                 // Make new card
                 artistCardView = new ArtistCardView(getContext());
-                artistCardView.set(mainActivity, mainActivity.musicControlView);
+                artistCardView.set(mainActivity);
                 artistCardView.setFirstLetter(artist.charAt(0));
             }
             artistCardView.addArtist(artist);

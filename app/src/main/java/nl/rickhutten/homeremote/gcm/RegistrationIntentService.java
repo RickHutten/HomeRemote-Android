@@ -11,13 +11,12 @@ import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
 
-import nl.rickhutten.homeremote.net.OnTaskCompleted;
 import nl.rickhutten.homeremote.net.POSTRequest;
 import nl.rickhutten.homeremote.R;
 
 public class RegistrationIntentService extends IntentService {
 
-    private static final String TAG = "RegistrationIntentService";
+    private static final String TAG = "RegIntentService";
     private static final String[] TOPICS = {"global"};
 
     public RegistrationIntentService() {
@@ -26,7 +25,7 @@ public class RegistrationIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.i("RegIntentService", "onStartCommand");
+        Log.i(TAG, "onStartCommand");
         SharedPreferences sharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE);
         try {
             // [START register_for_gcm]
@@ -39,12 +38,9 @@ public class RegistrationIntentService extends IntentService {
             String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
-            Log.i("RegIntentService", "GCM Registration Token: " + token);
+            Log.i(TAG, "GCM Registration Token: " + token);
 
             sendRegistrationToServer(token);
-
-            // Subscribe to topic channels
-            subscribeTopics(token);
 
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
@@ -52,7 +48,7 @@ public class RegistrationIntentService extends IntentService {
             sharedPreferences.edit().putBoolean("sentTokenToServer", true).apply();
             // [END register_for_gcm]
         } catch (Exception e) {
-            Log.d("RegIntentService", "Failed to complete token refresh", e);
+            Log.d(TAG, "Failed to complete token refresh", e);
             // If an exception happens while fetching the new token or updating our registration data
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             sharedPreferences.edit().putBoolean("sentTokenToServer", false).apply();
@@ -69,21 +65,6 @@ public class RegistrationIntentService extends IntentService {
      */
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
-        POSTRequest postToken = new POSTRequest(token);
-        postToken.execute("http://rickert.noip.me/register_token");
+        new POSTRequest(token).execute("http://rickert.noip.me/register_token");
     }
-
-    /**
-     * Subscribe to any GCM topics of interest, as defined by the TOPICS constant.
-     *
-     * @param token GCM token
-     * @throws IOException if unable to reach the GCM PubSub service
-     */
-    private void subscribeTopics(String token) throws IOException {
-        GcmPubSub pubSub = GcmPubSub.getInstance(this);
-        for (String topic : TOPICS) {
-            pubSub.subscribe(token, "/topics/" + topic, null);
-        }
-    }
-
 }

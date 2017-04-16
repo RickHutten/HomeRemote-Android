@@ -1,10 +1,8 @@
 package nl.rickhutten.homeremote.view;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,32 +13,27 @@ import android.widget.TextView;
 import nl.rickhutten.homeremote.activity.ArtistOverviewActivity;
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.Utils;
+import nl.rickhutten.homeremote.activity.MusicActivity;
 
 public class ArtistCardView extends RelativeLayout {
 
-    private View rootView;
-    private Context context;
     private LinearLayout card;
     private TextView firstLetter;
-    private MusicControlView musicControlView;
-    private Activity activity;
+    private MusicActivity activity;
 
     public ArtistCardView(Context context) {
         super(context);
         // Inflate layout from XML file
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        rootView = inflater.inflate(R.layout.artist_card_layout, this, false);
+        View rootView = inflater.inflate(R.layout.artist_card_layout, this, false);
         addView(rootView);
 
         firstLetter = (TextView) rootView.findViewById(R.id.firstLetter);
         card = (LinearLayout) rootView.findViewById(R.id.card);
-
-        this.context = context;
     }
 
-    public void set(final Activity activity, MusicControlView musicControlView) {
+    public void set(final MusicActivity activity) {
         this.activity = activity;
-        this.musicControlView = musicControlView;
     }
 
     public Character getFirstLetter() {
@@ -52,11 +45,11 @@ public class ArtistCardView extends RelativeLayout {
     }
 
     public void addArtist(final String artist) {
-        final TextView artistTextView = new TextView(context);
+        final TextView artistTextView = new TextView(activity);
         artistTextView.setText(artist);
         final int id = generateViewId();
         artistTextView.setId(id);
-        int dp = Utils.dpToPx(context, 6);
+        int dp = Utils.dpToPx(activity, 6);
         artistTextView.setPadding(dp, dp, dp, dp);
         artistTextView.setWidth(card.getWidth());
         artistTextView.setBackgroundResource(R.drawable.ripple);
@@ -66,16 +59,15 @@ public class ArtistCardView extends RelativeLayout {
         artistTextView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, ArtistOverviewActivity.class);
+                Intent intent = new Intent(activity, ArtistOverviewActivity.class);
                 intent.putExtra("artist", artist);
 
                 ActivityOptionsCompat options = ActivityOptionsCompat.
-                        makeSceneTransitionAnimation(activity, musicControlView, "musicControlView");
+                        makeSceneTransitionAnimation(activity, activity.musicControlView, "musicControlView");
 
-                context.startActivity(intent, options.toBundle());
+                activity.startActivity(intent, options.toBundle());
             }
         });
-
         card.addView(artistTextView);
     }
 }

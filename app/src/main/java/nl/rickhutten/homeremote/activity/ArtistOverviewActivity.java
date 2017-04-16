@@ -16,8 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 import nl.rickhutten.homeremote.R;
 import nl.rickhutten.homeremote.URL;
 import nl.rickhutten.homeremote.net.GETJSONRequest;
@@ -32,8 +30,6 @@ public class ArtistOverviewActivity extends MusicActivity {
     private String artistName;
     private LinearLayout songContainer;
     private LinearLayout albumContainer;
-    private ArrayList<ArrayList<String>> queue2;
-    private int offset = 0;
     private JSONObject album;
 
     @Override
@@ -76,89 +72,59 @@ public class ArtistOverviewActivity extends MusicActivity {
 
     private void getArtistData() {
         // Get the artist data
-        GETJSONRequest getArtistRequest = new GETJSONRequest(new OnJSONDownloaded() {
+        new GETJSONRequest(new OnJSONDownloaded() {
             @Override
             public void onJSONCompleted(JSONObject jObject) {
                 try {
                     JSONArray albums = jObject.getJSONArray("albums");
 
-                    // Make queue
-                    queue2 = new ArrayList<>();
-                    for (int i = 0; i < albums.length(); i++) {
-                        JSONObject album = albums.getJSONObject(i);
-                        JSONArray songs = album.getJSONArray("songs");
-                        for (int j = 0; j < songs.length(); j++) {
-                            ArrayList<String> s = new ArrayList<>();
-                            s.add(artistName);
-                            s.add(album.getString("title"));
-                            s.add(songs.getJSONObject(j).getString("title"));
-                            queue2.add(s);
-                        }
-                    }
-
-                    // TODO: This one takes a long time
+                    // TODO: Find out what's taking a long time
                     for (int i = 0; i < albums.length(); i++) {
                         album = albums.getJSONObject(i);
                         // Add album in horizontal album scrollview
                         addAlbum(album);
                         // Add all songs in song list
-                        addSongs(album, queue2, offset);
-
-                        offset += album.getJSONArray("songs").length();
+                        addSongs(album);
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-        });
-        getArtistRequest.execute(URL.getArtistUrl(this, artistName));
+        }).execute(URL.getArtistUrl(this, artistName));
     }
 
     public MusicControlView getMusicControlView() {
         return musicControlView;
     }
 
-    private void addAlbum(JSONObject album) {
+    private void addAlbum(JSONObject album) throws JSONException {
         AlbumCardView albumCardView = new AlbumCardView(this);
-        albumCardView.set(this, musicControlView);
+        albumCardView.set(this);
         albumCardView.setWidth(100);
-        try {
-            albumCardView.setAlbum(album.getString("title"), artistName);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        albumCardView.setAlbum(album.getString("title"), artistName);
         albumContainer.addView(albumCardView);
     }
 
-    private void addSongs(JSONObject album, ArrayList<ArrayList<String>> queue2, int songOffset) {
-
+    private void addSongs(JSONObject album) throws JSONException {
         // Add an AlbumExpandedCardView
         AlbumExpandedCardView cardView = new AlbumExpandedCardView(this);
-        try {
-            cardView.setAlbum(artistName, album.getString("title"));
-            // Add album to songcontainer
-            songContainer.addView(cardView);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
-        }
-        try {
-            JSONArray songs = album.getJSONArray("songs");
-            SongView songView;
-            for (int i = 0; i < songs.length(); i++) {
-                // Make song object
-                JSONObject song = songs.getJSONObject(i);
-                songView = new SongView(this, song.getString("artist"),  album.getString("title"),
-                        song.getString("title"),
-                        (float) song.getDouble("duration"));
+        cardView.setAlbum(artistName, album.getString("title"));
+        // Add album to songcontainer
+        songContainer.addView(cardView);
 
-                // Add song to cardview and activity songList
-                cardView.addSong(songView);
-                addToSongList(songView);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        // Add songs to CardView
+        JSONArray songs = album.getJSONArray("songs");
+        SongView songView;
+        for (int i = 0; i < songs.length(); i++) {
+            // Make song object
+            JSONObject song = songs.getJSONObject(i);
+            songView = new SongView(this, song.getString("artist"), album.getString("title"),
+                    song.getString("title"),
+                    (float) song.getDouble("duration"));
+
+            // Add song to CardView and activity songList
+            cardView.addSong(songView);
+            addToSongList(songView);
         }
     }
 }
